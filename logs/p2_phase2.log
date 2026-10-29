@@ -1,0 +1,305 @@
+Script started on Thu 29 Oct 2026 11:46:21 AM WAT
+[root@pvm1 ~]# su - oracle
+Last login: Thu Oct 29 11:43:05 WAT 2026 on pts/0
+[oracle@pvm1 ~]$ ~/scripts/start_all.sh
+The Oracle base remains unchanged with value /u01/app/oracle
+Processing Database instance "oradbcdb": log file /u01/app/oracle/product/19.0.0/dbhome_1/rdbms/log/startup.log
+[oracle@pvm1 ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Thu Oct 29 11:48:03 2026
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> SHOW PARAMETER DB_CREATE_FILE_DEST
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+db_create_file_dest		     string	 /u02/oradata
+
+SQL> SHOW PARAMETER DB_RECOVERY_FILE_DEST
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+db_recovery_file_dest		     string
+db_recovery_file_dest_size	     big integer 4G
+SQL> ALTER SYSTEM SET DB_RECOVERY_FILE_DEST_SIZE = 6G SCOPE=BOTH;
+
+System altered.
+
+SQL> ALTER SYSTEM SET DB_RECOVERY_FILE_DEST = '/u03/oradbcdb/fast_recovery_area' SCOPE=BOTH;
+
+System altered.
+
+SQL> SHOW PARAMETER DB_RECOVERY_FILE_DEST
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+db_recovery_file_dest		     string	 /u03/oradbcdb/fast_recovery_ar
+						 ea
+db_recovery_file_dest_size	     big integer 6G
+SQL> SELECT LOG_MODE FROM V$DATABASE;
+
+LOG_MODE
+------------
+NOARCHIVELOG
+
+SQL> SHUTDOWN IMMEDIATE
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> STARTUP MOUNT
+ORACLE instance started.
+
+Total System Global Area 4294963960 bytes
+Fixed Size		    9143032 bytes
+Variable Size		 2365587456 bytes
+Database Buffers	 1912602624 bytes
+Redo Buffers		    7630848 bytes
+Database mounted.
+SQL> ALTER DATABASE ARCHIVELOG;
+
+Database altered.
+
+SQL> ALTER DATABASE OPEN;
+
+Database altered.
+
+SQL> SELECT LOG_MODE FROM V$DATABASE;
+
+LOG_MODE
+------------
+ARCHIVELOG
+
+SQL> ARH HIVE LOG LIST
+Database log mode	       Archive Mode
+Automatic archival	       Enabled
+Archive destination	       USE_DB_RECOVERY_FILE_DEST
+Oldest online log sequence     9
+Next log sequence to archive   11
+Current log sequence	       11
+SQL> DESC V$LOG
+ Name					   Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ GROUP# 					    NUMBER
+ THREAD#					    NUMBER
+ SEQUENCE#					    NUMBER
+ BYTES						    NUMBER
+ BLOCKSIZE					    NUMBER
+ MEMBERS					    NUMBER
+ ARCHIVED					    VARCHAR2(3)
+ STATUS 					    VARCHAR2(16)
+ FIRST_CHANGE#					    NUMBER
+ FIRST_TIME					    DATE
+ NEXT_CHANGE#					    NUMBER
+ NEXT_TIME					    DATE
+ CON_ID 					    NUMBER
+
+SQL> SELECT GROUP#, SEQUENCE#, BYTES/1024/1024 AS SIZE_MB,
+  2  BLOCKSIZE, MEMBERS, ARCHIVED, STATUS
+  3  FROM V$LOG
+  4  ORDER BY GROUP#;
+
+    GROUP#  SEQUENCE#	 SIZE_MB  BLOCKSIZE    MEMBERS ARC STATUS
+---------- ---------- ---------- ---------- ---------- --- ----------------
+	 1	   10	      50	512	     1 YES INACTIVE
+	 2	   11	      50	512	     1 NO  CURRENT
+	 3	    9	      50	512	     1 YES INACTIVE
+
+SQL> ALTER SYSTEM SET DB_CREATE_ONLINE_LOG_DEST_1 = '/u03/oradbcdb/fast_recovery_area' SCOPE=BOTH;
+
+System altered.
+
+SQL> ALTER SYSTEM SET DB_CREATE_ONLINE_LOG_DEST_2 = '/u02/oradbcdb/other_log_area' SCOPE=BOTH;
+
+System altered.
+
+SQL> SELECT GROUP#, STATUS FROM V$LOG ORDER BY GROUP#;
+
+    GROUP# STATUS
+---------- ----------------
+	 1 INACTIVE
+	 2 CURRENT
+	 3 INACTIVE
+
+SQL> ALTER DATABASE DROP LOGFILE GROUP 1;
+
+Database altered.
+
+SQL> ALTER DATABASE ADD LOGFILE GROUP 1 SIZE 200M;
+
+Database altered.
+
+SQL> SELECT GROUP#, STATUS FROM V$LOG ORDER BY GROUP#;
+
+    GROUP# STATUS
+---------- ----------------
+	 1 UNUSED
+	 2 CURRENT
+	 3 INACTIVE
+
+SQL> ALTER SYSTEM SWITCH LOGFILE;
+
+System altered.
+
+SQL> SELECT GROUP#, STATUS FROM V$LOG ORDER BY GROUP#;
+
+    GROUP# STATUS
+---------- ----------------
+	 1 CURRENT
+	 2 ACTIVE
+	 3 INACTIVE
+
+SQL> ALTER SYSTEM SWITCH LOGFILE;
+
+System altered.
+
+SQL> SELECT GROUP#, STATUS FROM V$LOG ORDER BY GROUP#;
+
+    GROUP# STATUS
+---------- ----------------
+	 1 ACTIVE
+	 2 ACTIVE
+	 3 CURRENT
+
+SQL> ALTER SYSTEM SWITCH LOGFILE;
+
+System altered.
+
+SQL> SELECT GROUP#, STATUS FROM V$LOG ORDER BY GROUP#;
+
+    GROUP# STATUS
+---------- ----------------
+	 1 INACTIVE
+	 2 CURRENT
+	 3 ACTIVE
+
+SQL> SELECT GROUP#, STATUS FROM V$LOG ORDER BY GROUP#;                                                 LTER SYSTEM SWITCH LOGFILE;
+
+System altered.
+
+SQL> SELECT GROUP#, STATUS FROM V$LOG ORDER BY GROUP#;
+
+    GROUP# STATUS
+---------- ----------------
+	 1 CURRENT
+	 2 ACTIVE
+	 3 ACTIVE
+
+SQL> ALTER SYSTEM SWITCH LOGFILE;
+
+System altered.
+
+SQL> SELECT GROUP#, STATUS FROM V$LOG ORDER BY GROUP#;
+
+    GROUP# STATUS
+---------- ----------------
+	 1 INACTIVE
+	 2 INACTIVE
+	 3 CURRENT
+
+SQL> ALTER DATABASE DROP LOGFILE GROUP 2;
+
+Database altered.
+
+SQL> ALTER DATABASE ADD LOGFILE GROUP 2 SIZE 200M;
+
+Database altered.
+
+SQL> SELECT GROUP#, STATUS FROM V$LOG ORDER BY GROUP#;
+
+    GROUP# STATUS
+---------- ----------------
+	 1 INACTIVE
+	 2 UNUSED
+	 3 CURRENT
+
+SQL> ALTER SYSTEM SWITCH LOGFILE;
+
+System altered.
+
+SQL> SELECT GROUP#, STATUS FROM V$LOG ORDER BY GROUP#;
+
+    GROUP# STATUS
+---------- ----------------
+	 1 INACTIVE
+	 2 CURRENT
+	 3 ACTIVE
+
+SQL> ALTER SYSTEM SWITCH LOGFILE;
+
+System altered.
+
+SQL> SELECT GROUP#, STATUS FROM V$LOG ORDER BY GROUP#;
+
+    GROUP# STATUS
+---------- ----------------
+	 1 CURRENT
+	 2 ACTIVE
+	 3 ACTIVE
+
+SQL> ALTER SYSTEM SWITCH LOGFILE;
+
+System altered.
+
+SQL> SELECT GROUP#, STATUS FROM V$LOG ORDER BY GROUP#;
+
+    GROUP# STATUS
+---------- ----------------
+	 1 INACTIVE
+	 2 INACTIVE
+	 3 CURRENT
+
+SQL> ALTER SYSTEM SWITCH LOGFILE;
+
+System altered.
+
+SQL> SELECT GROUP#, STATUS FROM V$LOG ORDER BY GROUP#;
+
+    GROUP# STATUS
+---------- ----------------
+	 1 INACTIVE
+	 2 CURRENT
+	 3 INACTIVE
+
+SQL> ALTER DATABASE DROP LOGFILE GROUP 3;
+
+Database altered.
+
+SQL> SELECT GROUP#, STATUS FROM V$LOG ORDER BY GROUP#;
+
+    GROUP# STATUS
+---------- ----------------
+	 1 INACTIVE
+	 2 CURRENT
+
+SQL> ALTER SYSTEM SET LOG_ARCHIVE_DEST_1 = 'LOCATION=USE_DB_RECOVERY_FILE_DEST OPTIONAL' SCOPE=BOTH;
+
+System altered.
+
+SQL> ALTER SYSTEM SET LOG_ARCHIVE_DEST_2 = 'LOCATION=/u02/oradbcdb/other_log_area OPTIONAL' SCOPE=BOTH;
+
+System altered.
+
+SQL> ALTER SYSTEM SET LOG_ARCHIVE_DEST_STATE_1 = ENABLE SCOPE=BOTH;
+
+System altered.
+
+SQL> ALTER SYSTEM SET LOG_ARCHIVE_DEST_STATE_2 = ENABLE SCOPE=BOTH;
+
+System altered.
+
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@pvm1 ~]$ exit
+logout
+[root@pvm1 ~]# exit
+exit
+
+Script done on Thu 29 Oct 2026 12:20:19 PM WAT
