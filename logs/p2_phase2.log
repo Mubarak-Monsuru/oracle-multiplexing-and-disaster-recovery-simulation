@@ -105,11 +105,11 @@ SQL> SELECT GROUP#, SEQUENCE#, BYTES/1024/1024 AS SIZE_MB,
   3  FROM V$LOG
   4  ORDER BY GROUP#;
 
-    GROUP#  SEQUENCE#	 SIZE_MB  BLOCKSIZE    MEMBERS ARC STATUS
+GROUP#  	SEQUENCE# SIZE_MB  	BLOCKSIZE    MEMBERS 	ARC STATUS
 ---------- ---------- ---------- ---------- ---------- --- ----------------
-	 1	   10	      50	512	     1 YES INACTIVE
-	 2	   11	      50	512	     1 NO  CURRENT
-	 3	    9	      50	512	     1 YES INACTIVE
+	 1	   	10	      50		512	     		1 		YES INACTIVE
+	 2	   	11	      50		512	     		1 		NO  CURRENT
+	 3	    9	      50		512	     		1 		YES INACTIVE
 
 SQL> ALTER SYSTEM SET DB_CREATE_ONLINE_LOG_DEST_1 = '/u03/oradbcdb/fast_recovery_area' SCOPE=BOTH;
 
