@@ -1,0 +1,71 @@
+Script started on Thu 29 Oct 2026 11:08:27 AM WAT
+[root@pvm1 ~]# lsblk
+NAME        MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sdb           8:16   0   10G  0 disk 
+sr0          11:0    1 1024M  0 rom  
+sda           8:0    0   40G  0 disk 
+├─sda2        8:2    0   39G  0 part 
+│ ├─ol-swap 252:1    0    4G  0 lvm  [SWAP]
+│ └─ol-root 252:0    0   35G  0 lvm  /
+└─sda1        8:1    0    1G  0 part /boot
+[root@pvm1 ~]# parted /dev/sdb --script mklabel gpt
+[root@pvm1 ~]# parted /dev/sdb --script mkpart primary ext4 0% 100%
+[root@pvm1 ~]# mkfs.ext4 /dev/sdb1
+mke2fs 1.45.4 (23-Sep-2019)
+Creating filesystem with 2620928 4k blocks and 655360 inodes
+Filesystem UUID: c616edb7-f4d6-45f7-bbfd-0e5d3a50c81f
+Superblock backups stored on blocks: 
+	32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632
+
+Allocating group tables:  0/80     one                            
+Writing inode tables:  0/80     one                            
+Creating journal (16384 blocks): done
+Writing superblocks and filesystem accounting information:  0/80     one
+
+[root@pvm1 ~]# mkdir -p /u03
+[root@pvm1 ~]# mount /dev/sdb1 /u03
+[root@pvm1 ~]# chown -R oracle:oinstall /u03
+[root@pvm1 ~]# chmod -R 775 /u03
+[root@pvm1 ~]# df -Th /u03
+Filesystem     Type  Size  Used Avail Use% Mounted on
+/dev/sdb1      ext4  9.8G   24K  9.3G   1% /u03
+[root@pvm1 ~]# blkid /dev/sdb1
+/dev/sdb1: UUID="c616edb7-f4d6-45f7-bbfd-0e5d3a50c81f" TYPE="ext4" PARTLABEL="primary" PARTUUID="27d1e4ff-1cf4-459e-a967-d0f3fb9d57dc" 
+[root@pvm1 ~]# vi /etc/fstbab
+[root@pvm1 ~]# cat /etc/fstab
+#
+# /etc/fstab
+# Created by anaconda on Wed Sep 23 17:22:17 2026
+#
+# Accessible filesystems, by reference, are maintained under '/dev/disk'
+# See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info
+#
+/dev/mapper/ol-root     /                       xfs     defaults        0 0
+UUID=d02c7540-1b41-4899-b562-1467805aa6a8 /boot                   xfs     defaults        0 0
+/dev/mapper/ol-swap     swap                    swap    defaults        0 0
+UUID=c616edb7-f4d6-45f7-bbfd-0e5d3a50c81f /u03  ext4  defaults  0  2
+[root@pvm1 ~]# mount -a
+[root@pvm1 ~]# umount /u03
+[root@pvm1 ~]# mount -a
+[root@pvm1 ~]# df -Th /u03
+Filesystem     Type  Size  Used Avail Use% Mounted on
+/dev/sdb1      ext4  9.8G   24K  9.3G   1% /u03
+[root@pvm1 ~]# lsblk -f
+NAME        FSTYPE      LABEL UUID                                   MOUNTPOINT
+sdb                                                                  
+└─sdb1      ext4              c616edb7-f4d6-45f7-bbfd-0e5d3a50c81f   /u03
+sr0                                                                  
+sda                                                                  
+├─sda2      LVM2_member       ebzOnJ-pNkE-i8FY-jkDP-IE8n-x6kl-fJhV53 
+│ ├─ol-swap swap              69827ae1-fa18-4971-ad11-ab79b453dfb8   [SWAP]
+│ └─ol-root xfs               eb25e062-2c4e-4b61-8c07-623e80ae0134   /
+└─sda1      xfs               d02c7540-1b41-4899-b562-1467805aa6a8   /boot
+[root@pvm1 ~]# mkdir -p /u03/oradbcdb/fast_recovery_area
+[root@pvm1 ~]# mkdir -p /u02/oradbcdb/backups
+[root@pvm1 ~]# mkdir -p /u02/oradbcdb/other_log_area
+[root@pvm1 ~]# chown -R oracle:oinstall /u02/oradbcdb /u03/oradbcdb
+[root@pvm1 ~]# chmod -R 775 /u02/oradbcdb /u03/oradbcdb
+[root@pvm1 ~]# exit
+exit
+
+Script done on Thu 29 Oct 2026 11:36:52 AM WAT
