@@ -76,7 +76,7 @@ LOG_MODE
 ------------
 ARCHIVELOG
 
-SQL> ARH HIVE LOG LIST
+SQL> ARCHIVE LOG LIST
 Database log mode	       Archive Mode
 Automatic archival	       Enabled
 Archive destination	       USE_DB_RECOVERY_FILE_DEST

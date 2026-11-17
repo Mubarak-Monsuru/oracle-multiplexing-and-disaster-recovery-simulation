@@ -1,0 +1,1951 @@
+Script started on Mon 16 Nov 2026 07:55:59 PM WAT
+[root@pvm1 ~]# su - oracle
+Last login: Mon Nov 16 19:51:40 WAT 2026 on pts/0
+[oracle@pvm1 ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Mon Nov 16 19:56:11 2026
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-YYYY HH24:MI:SS';
+
+Session altered.
+
+SQL> SELECT SYSDATE, CURRENT_SCN FROM V$DATABASE;
+
+SYSDATE 	     CURRENT_SCN
+-------------------- -----------
+16-NOV-2026 19:57:02	 6955319
+
+SQL> conn pdb2_intern@pdb2
+Enter password: 
+Connected.
+SQL> SELECT * FROM ENGINEERINGSTUDENTS;
+
+STUDENT_ID FIRST_NAME			  LAST_NAME
+---------- ------------------------------ ------------------------------
+       AGE GENDER     DEPARTMENT	   ACADEMIC_YEAR
+---------- ---------- -------------------- -------------
+    226110 Abdur-Rasheed		  Ibrahim
+	24 Male       Mechanical		       4
+
+    226120 Esther			  Okafor
+	21 Female     Mechatronics		       3
+
+    226130 Zulfah			  Kolawole
+	22 Female     Electrical		       3
+
+
+STUDENT_ID FIRST_NAME			  LAST_NAME
+---------- ------------------------------ ------------------------------
+       AGE GENDER     DEPARTMENT	   ACADEMIC_YEAR
+---------- ---------- -------------------- -------------
+    226140 David			  Adams
+	21 Male       Mechatronics		       2
+
+    226150 Isa				  Danjuma
+	19 Male       Electrical		       2
+
+
+SQL> DELETE FROM ENGINEERINGSTUDENTS WHERE FIRST_NAME='Isa';
+
+1 row deleted.
+
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> SELECT * FROM ENGINEERINGSTUDENTS AS OF SCN 6955319;
+
+STUDENT_ID FIRST_NAME			  LAST_NAME
+---------- ------------------------------ ------------------------------
+       AGE GENDER     DEPARTMENT	   ACADEMIC_YEAR
+---------- ---------- -------------------- -------------
+    226110 Abdur-Rasheed		  Ibrahim
+	24 Male       Mechanical		       4
+
+    226120 Esther			  Okafor
+	21 Female     Mechatronics		       3
+
+    226130 Zulfah			  Kolawole
+	22 Female     Electrical		       3
+
+
+STUDENT_ID FIRST_NAME			  LAST_NAME
+---------- ------------------------------ ------------------------------
+       AGE GENDER     DEPARTMENT	   ACADEMIC_YEAR
+---------- ---------- -------------------- -------------
+    226140 David			  Adams
+	21 Male       Mechatronics		       2
+
+    226150 Isa				  Danjuma
+	19 Male       Electrical		       2
+
+
+SQL> SELECT * FROM ENGINEERINGSTUDENTS AS OF TIMESTAMP TO_DATE('16-NOV-2026 19:57:02', 'DD-MON-YYYY HH24:MI:SS');
+
+STUDENT_ID FIRST_NAME			  LAST_NAME
+---------- ------------------------------ ------------------------------
+       AGE GENDER     DEPARTMENT	   ACADEMIC_YEAR
+---------- ---------- -------------------- -------------
+    226110 Abdur-Rasheed		  Ibrahim
+	24 Male       Mechanical		       4
+
+    226120 Esther			  Okafor
+	21 Female     Mechatronics		       3
+
+    226130 Zulfah			  Kolawole
+	22 Female     Electrical		       3
+
+
+STUDENT_ID FIRST_NAME			  LAST_NAME
+---------- ------------------------------ ------------------------------
+       AGE GENDER     DEPARTMENT	   ACADEMIC_YEAR
+---------- ---------- -------------------- -------------
+    226140 David			  Adams
+	21 Male       Mechatronics		       2
+
+    226150 Isa				  Danjuma
+	19 Male       Electrical		       2
+
+
+SQL> SELECT * FROM ENGINEERINGSTUDENTS;
+
+STUDENT_ID FIRST_NAME			  LAST_NAME
+---------- ------------------------------ ------------------------------
+       AGE GENDER     DEPARTMENT	   ACADEMIC_YEAR
+---------- ---------- -------------------- -------------
+    226110 Abdur-Rasheed		  Ibrahim
+	24 Male       Mechanical		       4
+
+    226120 Esther			  Okafor
+	21 Female     Mechatronics		       3
+
+    226130 Zulfah			  Kolawole
+	22 Female     Electrical		       3
+
+
+STUDENT_ID FIRST_NAME			  LAST_NAME
+---------- ------------------------------ ------------------------------
+       AGE GENDER     DEPARTMENT	   ACADEMIC_YEAR
+---------- ---------- -------------------- -------------
+    226140 David			  Adams
+	21 Male       Mechatronics		       2
+
+
+SQL> conn / as sysdba
+Connected.
+SQL> ALTER SYSTEM ARCHIVE LOG CURRENT;
+
+System altered.
+
+SQL> SHUTDOWN IMMEDIATE;
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@pvm1 ~]$ exit
+logout
+[root@pvm1 ~]# lsblk -f
+NAME        FSTYPE      LABEL UUID                                   MOUNTPOINT
+sdb                                                                  
+└─sdb1      ext4              68374dbb-fe2f-44f0-b4f2-07209dd966b8   /u03
+sr0                                                                  
+sda                                                                  
+├─sda2      LVM2_member       ebzOnJ-pNkE-i8FY-jkDP-IE8n-x6kl-fJhV53 
+│ ├─ol-swap swap              69827ae1-fa18-4971-ad11-ab79b453dfb8   [SWAP]
+│ └─ol-root xfs               eb25e062-2c4e-4b61-8c07-623e80ae0134   /
+└─sda1      xfs               d02c7540-1b41-4899-b562-1467805aa6a8   /boot
+[root@pvm1 ~]# umount /u03
+[root@pvm1 ~]# umount /u03lsblk -f
+NAME        FSTYPE      LABEL UUID                                   MOUNTPOINT
+sdb                                                                  
+└─sdb1      ext4              68374dbb-fe2f-44f0-b4f2-07209dd966b8   
+sr0                                                                  
+sda                                                                  
+├─sda2      LVM2_member       ebzOnJ-pNkE-i8FY-jkDP-IE8n-x6kl-fJhV53 
+│ ├─ol-swap swap              69827ae1-fa18-4971-ad11-ab79b453dfb8   [SWAP]
+│ └─ol-root xfs               eb25e062-2c4e-4b61-8c07-623e80ae0134   /
+└─sda1      xfs               d02c7540-1b41-4899-b562-1467805aa6a8   /boot
+[root@pvm1 ~]# mkdir -p /u03/oradbcdb/fast_recovery_area
+[root@pvm1 ~]# chown -R oracle:oinstall /u03/oradbcdb
+[root@pvm1 ~]# chmod -R 775 /u03/oradbcdb
+[root@pvm1 ~]# su - oracle
+Last login: Mon Nov 16 19:56:05 WAT 2026 on pts/1
+[oracle@pvm1 ~]$ df -h
+Filesystem           Size  Used Avail Use% Mounted on
+devtmpfs             2.8G     0  2.8G   0% /dev
+tmpfs                2.8G     0  2.8G   0% /dev/shm
+tmpfs                2.8G  9.3M  2.8G   1% /run
+tmpfs                2.8G     0  2.8G   0% /sys/fs/cgroup
+/dev/mapper/ol-root   35G   27G  8.8G  75% /
+/dev/sda1           1014M  343M  672M  34% /boot
+project_staging      476G  221G  256G  47% /media/sf_project_staging
+tmpfs                564M   12K  564M   1% /run/user/42
+tmpfs                564M     0  564M   0% /run/user/0
+[oracle@pvm1 ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Mon Nov 16 20:04:16 2026
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Connected to an idle instance.
+
+SQL> STARTUP
+ORACLE instance started.
+
+Total System Global Area 4294963960 bytes
+Fixed Size		    9143032 bytes
+Variable Size		 2365587456 bytes
+Database Buffers	 1912602624 bytes
+Redo Buffers		    7630848 bytes
+Database mounted.
+Database opened.
+SQL> COL NAME FOR A10
+SQL> SELECT CON_ID, NAME, OPEN_MODE FROM V$PDBS ORDER BY CON_ID;
+
+CON_ID NAME	  OPEN_MODE
+------ ---------- ----------
+     2 PDB$SEED   READ ONLY
+     3 PDB1	  READ WRITE
+     4 PDB2	  READ WRITE
+
+SQL> SELECT SUM(BYTES/1024/1024/1024) TOTAL_DB_DATA_FILES_GB
+  2  FROM CDB_DATA_FILES;
+
+TOTAL_DB_DATA_FILES_GB
+----------------------
+	    3.85253906
+
+SQL> ALTER SESSION SET CONTAINER=PDB2;
+
+Session altered.
+
+SQL> SELECT TABLESPACE_NAME, SUM(BYTES/1024/1024) AS SLTBS_MB
+  2  FROM DBA_DATA_FILES
+  3  WHERE TABLESPACE_NAME = 'SLTBS'
+  4  GROUP BY TABLESPACE_NAME;
+
+TABLESPACE_NAME 		 SLTBS_MB
+------------------------------ ----------
+SLTBS				      200
+
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@pvm1 ~]$ exit
+logout
+[root@pvm1 ~]# mkdir -p /u02/oradbcdb/aux
+[root@pvm1 ~]# chown -R oracle:oinstall /u02/oradbcdb/aux
+[root@pvm1 ~]# chmod -R 775 /u02/oradbcdb/aux
+[root@pvm1 ~]# su - oracle
+Last login: Mon Nov 16 20:04:01 WAT 2026 on pts/1
+[oracle@pvm1 ~]$ rman target /
+
+Recovery Manager: Release 19.0.0.0.0 - Production on Mon Nov 16 20:12:09 2026
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+connected to target database: ORADBCDB (DBID=2274470866)
+
+RMAN> RECOVER TABLESPACE PDB2:SLTBS UNTIL SCN 6955319
+2> AUXILIARY DESTINATION '/u02/oradbcdb/aux';
+
+Starting recover at 16-NOV-26
+using target database control file instead of recovery catalog
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=276 device type=DISK
+RMAN-05026: warning: presuming following set of tablespaces applies to specified point-in-time
+
+List of tablespaces expected to have UNDO segments
+Tablespace SYSTEM
+Tablespace PDB2:SYSTEM
+Tablespace UNDOTBS1
+Tablespace PDB2:UNDOTBS1
+
+Creating automatic instance, with SID='gAxE'
+
+initialization parameters used for automatic instance:
+db_name=ORADBCDB
+db_unique_name=gAxE_pitr_PDB2_ORADBCDB
+compatible=19.0.0
+db_block_size=8192
+db_files=200
+diagnostic_dest=/u01/app/oracle
+_system_trig_enabled=FALSE
+sga_target=4096M
+processes=200
+db_create_file_dest=/u02/oradbcdb/aux
+log_archive_dest_1='location=/u02/oradbcdb/aux'
+enable_pluggable_database=true
+_clone_one_pdb_recovery=true
+#No auxiliary parameter file used
+
+
+starting up automatic instance ORADBCDB
+
+Oracle instance started
+
+Total System Global Area    4294963760 bytes
+
+Fixed Size                     9142832 bytes
+Variable Size                805306368 bytes
+Database Buffers            3472883712 bytes
+Redo Buffers                   7630848 bytes
+Automatic instance created
+Running TRANSPORT_SET_CHECK on recovery set tablespaces
+TRANSPORT_SET_CHECK completed successfully
+
+contents of Memory Script:
+{
+# set requested point in time
+set until  scn 6955319;
+# restore the controlfile
+restore clone controlfile;
+ 
+# mount the controlfile
+sql clone 'alter database mount clone database';
+ 
+# archive current online log 
+sql 'alter system archive log current';
+# avoid unnecessary autobackups for structural changes during TSPITR
+sql 'begin dbms_backup_restore.AutoBackupFlag(FALSE); end;';
+}
+executing Memory Script
+
+executing command: SET until clause
+
+Starting restore at 16-NOV-26
+allocated channel: ORA_AUX_DISK_1
+channel ORA_AUX_DISK_1: SID=165 device type=DISK
+
+channel ORA_AUX_DISK_1: starting datafile backup set restore
+channel ORA_AUX_DISK_1: restoring control file
+channel ORA_AUX_DISK_1: reading from backup piece /u02/oradbcdb/backups/ctl_bk_c-2274470866-20261110-02
+channel ORA_AUX_DISK_1: piece handle=/u02/oradbcdb/backups/ctl_bk_c-2274470866-20261110-02 tag=TAG20261110T122101
+channel ORA_AUX_DISK_1: restored backup piece 1
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:00:01
+output file name=/u02/oradbcdb/aux/ORADBCDB/controlfile/o1_mf_ohpomfjg_.ctl
+Finished restore at 16-NOV-26
+
+sql statement: alter database mount clone database
+
+sql statement: alter system archive log current
+
+sql statement: begin dbms_backup_restore.AutoBackupFlag(FALSE); end;
+
+contents of Memory Script:
+{
+# set requested point in time
+set until  scn 6955319;
+plsql <<<--
+declare
+  sqlstatement       varchar2(512);
+  pdbname            varchar2(128);
+  offline_not_needed exception;
+  pragma exception_init(offline_not_needed, -01539);
+begin
+   pdbname := 'PDB2'; -- pdbname
+  sqlstatement := 'alter tablespace '||  'SLTBS' ||' offline immediate';
+  krmicd.writeMsg(6162, sqlstatement);
+  krmicd.execSql(sqlstatement, 0, pdbname);
+exception
+  when offline_not_needed then
+    null;
+end; >>>;
+# set destinations for recovery set and auxiliary set datafiles
+set newname for clone datafile  1 to new;
+set newname for clone datafile  13 to new;
+set newname for clone datafile  4 to new;
+set newname for clone datafile  15 to new;
+set newname for clone datafile  3 to new;
+set newname for clone datafile  14 to new;
+set newname for clone tempfile  1 to new;
+set newname for clone tempfile  4 to new;
+set newname for datafile  17 to 
+ "/u02/oradata/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_sltbs_odhqgrkt_.dbf";
+# switch all tempfiles
+switch clone tempfile all;
+# restore the tablespaces in the recovery set and the auxiliary set
+restore clone datafile  1, 13, 4, 15, 3, 14, 17;
+ 
+switch clone datafile all;
+}
+executing Memory Script
+
+executing command: SET until clause
+
+sql statement: alter tablespace SLTBS offline immediate
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+renamed tempfile 1 to /u02/oradbcdb/aux/ORADBCDB/datafile/o1_mf_temp_%u_.tmp in control file
+renamed tempfile 4 to /u02/oradbcdb/aux/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_temp_%u_.tmp in control file
+
+Starting restore at 16-NOV-26
+using channel ORA_AUX_DISK_1
+
+channel ORA_AUX_DISK_1: restoring datafile 00001
+input datafile copy RECID=66 STAMP=1248955990 file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-1_1t5733i7
+destination for restore of datafile 00001: /u02/oradbcdb/aux/ORADBCDB/datafile/o1_mf_system_%u_.dbf
+channel ORA_AUX_DISK_1: copied datafile copy of datafile 00001, elapsed time: 00:00:15
+output file name=/u02/oradbcdb/aux/ORADBCDB/datafile/o1_mf_system_ohpon5cn_.dbf RECID=83 STAMP=1249503390
+channel ORA_AUX_DISK_1: restoring datafile 00013
+input datafile copy RECID=72 STAMP=1248956045 file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-13_235733kb
+destination for restore of datafile 00013: /u02/oradbcdb/aux/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_system_%u_.dbf
+channel ORA_AUX_DISK_1: copied datafile copy of datafile 00013, elapsed time: 00:00:07
+output file name=/u02/oradbcdb/aux/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_system_ohponnkj_.dbf RECID=84 STAMP=1249503399
+channel ORA_AUX_DISK_1: restoring datafile 00004
+input datafile copy RECID=73 STAMP=1248956048 file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-4_245733ke
+destination for restore of datafile 00004: /u02/oradbcdb/aux/ORADBCDB/datafile/o1_mf_undotbs1_%u_.dbf
+channel ORA_AUX_DISK_1: copied datafile copy of datafile 00004, elapsed time: 00:00:03
+output file name=/u02/oradbcdb/aux/ORADBCDB/datafile/o1_mf_undotbs1_ohponvm4_.dbf RECID=85 STAMP=1249503406
+channel ORA_AUX_DISK_1: restoring datafile 00015
+input datafile copy RECID=80 STAMP=1248956070 file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-15_2b5733l5
+destination for restore of datafile 00015: /u02/oradbcdb/aux/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_undotbs1_%u_.dbf
+channel ORA_AUX_DISK_1: copied datafile copy of datafile 00015, elapsed time: 00:00:03
+output file name=/u02/oradbcdb/aux/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_undotbs1_ohponyop_.dbf RECID=86 STAMP=1249503407
+channel ORA_AUX_DISK_1: restoring datafile 00003
+input datafile copy RECID=67 STAMP=1248956009 file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-3_1u5733j0
+destination for restore of datafile 00003: /u02/oradbcdb/aux/ORADBCDB/datafile/o1_mf_sysaux_%u_.dbf
+channel ORA_AUX_DISK_1: copied datafile copy of datafile 00003, elapsed time: 00:00:07
+output file name=/u02/oradbcdb/aux/ORADBCDB/datafile/o1_mf_sysaux_ohpoo1ql_.dbf RECID=87 STAMP=1249503415
+channel ORA_AUX_DISK_1: restoring datafile 00014
+input datafile copy RECID=69 STAMP=1248956027 file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-14_205733jn
+destination for restore of datafile 00014: /u02/oradbcdb/aux/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_sysaux_%u_.dbf
+channel ORA_AUX_DISK_1: copied datafile copy of datafile 00014, elapsed time: 00:00:07
+output file name=/u02/oradbcdb/aux/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_sysaux_ohpoo8sy_.dbf RECID=88 STAMP=1249503420
+channel ORA_AUX_DISK_1: restoring datafile 00017
+input datafile copy RECID=77 STAMP=1248956061 file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SLTBS_FNO-17_285733kr
+destination for restore of datafile 00017: /u02/oradata/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_sltbs_odhqgrkt_.dbf
+channel ORA_AUX_DISK_1: copied datafile copy of datafile 00017, elapsed time: 00:00:03
+output file name=/u02/oradata/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_sltbs_odhqgrkt_.dbf RECID=0 STAMP=0
+Finished restore at 16-NOV-26
+
+datafile 1 switched to datafile copy
+input datafile copy RECID=89 STAMP=1249503427 file name=/u02/oradbcdb/aux/ORADBCDB/datafile/o1_mf_system_ohpon5cn_.dbf
+datafile 13 switched to datafile copy
+input datafile copy RECID=90 STAMP=1249503427 file name=/u02/oradbcdb/aux/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_system_ohponnkj_.dbf
+datafile 4 switched to datafile copy
+input datafile copy RECID=91 STAMP=1249503427 file name=/u02/oradbcdb/aux/ORADBCDB/datafile/o1_mf_undotbs1_ohponvm4_.dbf
+datafile 15 switched to datafile copy
+input datafile copy RECID=92 STAMP=1249503427 file name=/u02/oradbcdb/aux/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_undotbs1_ohponyop_.dbf
+datafile 3 switched to datafile copy
+input datafile copy RECID=93 STAMP=1249503427 file name=/u02/oradbcdb/aux/ORADBCDB/datafile/o1_mf_sysaux_ohpoo1ql_.dbf
+datafile 14 switched to datafile copy
+input datafile copy RECID=94 STAMP=1249503427 file name=/u02/oradbcdb/aux/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_sysaux_ohpoo8sy_.dbf
+
+contents of Memory Script:
+{
+# set requested point in time
+set until  scn 6955319;
+# online the datafiles restored or switched
+sql clone "alter database datafile  1 online";
+sql clone 'PDB2' "alter database datafile 
+ 13 online";
+sql clone "alter database datafile  4 online";
+sql clone 'PDB2' "alter database datafile 
+ 15 online";
+sql clone "alter database datafile  3 online";
+sql clone 'PDB2' "alter database datafile 
+ 14 online";
+sql clone 'PDB2' "alter database datafile 
+ 17 online";
+# recover and open resetlogs
+recover clone database tablespace  "PDB2":"SLTBS", "SYSTEM", "PDB2":"SYSTEM", "UNDOTBS1", "PDB2":"UNDOTBS1", "SYSAUX", "PDB2":"SYSAUX" delete archivelog;
+alter clone database open resetlogs;
+}
+executing Memory Script
+
+executing command: SET until clause
+
+sql statement: alter database datafile  1 online
+
+sql statement: alter database datafile  13 online
+
+sql statement: alter database datafile  4 online
+
+sql statement: alter database datafile  15 online
+
+sql statement: alter database datafile  3 online
+
+sql statement: alter database datafile  14 online
+
+sql statement: alter database datafile  17 online
+
+Starting recover at 16-NOV-26
+using channel ORA_AUX_DISK_1
+channel ORA_AUX_DISK_1: starting incremental datafile backup set restore
+channel ORA_AUX_DISK_1: specifying datafile(s) to restore from backup set
+destination for restore of datafile 00001: /u02/oradbcdb/aux/ORADBCDB/datafile/o1_mf_system_ohpon5cn_.dbf
+destination for restore of datafile 00004: /u02/oradbcdb/aux/ORADBCDB/datafile/o1_mf_undotbs1_ohponvm4_.dbf
+destination for restore of datafile 00003: /u02/oradbcdb/aux/ORADBCDB/datafile/o1_mf_sysaux_ohpoo1ql_.dbf
+channel ORA_AUX_DISK_1: reading from backup piece /u02/oradbcdb/backups/bkp_l1_2g57340s_1_1
+channel ORA_AUX_DISK_1: piece handle=/u02/oradbcdb/backups/bkp_l1_2g57340s_1_1 tag=WHOLE_LEVEL_0
+channel ORA_AUX_DISK_1: restored backup piece 1
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:00:01
+channel ORA_AUX_DISK_1: starting incremental datafile backup set restore
+channel ORA_AUX_DISK_1: specifying datafile(s) to restore from backup set
+destination for restore of datafile 00017: /u02/oradata/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_sltbs_odhqgrkt_.dbf
+destination for restore of datafile 00013: /u02/oradbcdb/aux/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_system_ohponnkj_.dbf
+destination for restore of datafile 00015: /u02/oradbcdb/aux/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_undotbs1_ohponyop_.dbf
+destination for restore of datafile 00014: /u02/oradbcdb/aux/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_sysaux_ohpoo8sy_.dbf
+channel ORA_AUX_DISK_1: reading from backup piece /u02/oradbcdb/backups/bkp_l1_2i573417_1_1
+channel ORA_AUX_DISK_1: piece handle=/u02/oradbcdb/backups/bkp_l1_2i573417_1_1 tag=WHOLE_LEVEL_0
+channel ORA_AUX_DISK_1: restored backup piece 1
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:00:01
+
+starting media recovery
+
+archived log for thread 1 with sequence 17 is already on disk as file /u02/oradbcdb/other_log_area/1_17_1247693279.dbf
+archived log for thread 1 with sequence 18 is already on disk as file /u02/oradbcdb/other_log_area/1_18_1247693279.dbf
+archived log for thread 1 with sequence 19 is already on disk as file /u02/oradbcdb/other_log_area/1_19_1247693279.dbf
+archived log for thread 1 with sequence 20 is already on disk as file /u02/oradbcdb/other_log_area/1_20_1247693279.dbf
+channel ORA_AUX_DISK_1: starting archived log restore to default destination
+channel ORA_AUX_DISK_1: restoring archived log
+archived log thread=1 sequence=16
+channel ORA_AUX_DISK_1: reading from backup piece /u02/oradbcdb/backups/arch_2k57341b_1_1
+channel ORA_AUX_DISK_1: piece handle=/u02/oradbcdb/backups/arch_2k57341b_1_1 tag=ARCH_BKP
+channel ORA_AUX_DISK_1: restored backup piece 1
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:00:01
+archived log file name=/u02/oradbcdb/aux/1_16_1247693279.dbf thread=1 sequence=16
+channel clone_default: deleting archived log(s)
+archived log file name=/u02/oradbcdb/aux/1_16_1247693279.dbf RECID=64 STAMP=1249503436
+archived log file name=/u02/oradbcdb/other_log_area/1_17_1247693279.dbf thread=1 sequence=17
+archived log file name=/u02/oradbcdb/other_log_area/1_18_1247693279.dbf thread=1 sequence=18
+archived log file name=/u02/oradbcdb/other_log_area/1_19_1247693279.dbf thread=1 sequence=19
+archived log file name=/u02/oradbcdb/other_log_area/1_20_1247693279.dbf thread=1 sequence=20
+media recovery complete, elapsed time: 00:00:32
+Finished recover at 16-NOV-26
+
+database opened
+
+contents of Memory Script:
+{
+sql clone 'alter pluggable database  PDB2 open';
+}
+executing Memory Script
+
+sql statement: alter pluggable database  PDB2 open
+
+contents of Memory Script:
+{
+# make read only the tablespace that will be exported
+sql clone 'PDB2' 'alter tablespace 
+ SLTBS read only';
+# create directory for datapump import
+sql 'PDB2' "create or replace directory 
+TSPITR_DIROBJ_DPDIR as ''
+/u02/oradbcdb/aux''";
+# create directory for datapump export
+sql clone 'PDB2' "create or replace directory 
+TSPITR_DIROBJ_DPDIR as ''
+/u02/oradbcdb/aux''";
+}
+executing Memory Script
+
+sql statement: alter tablespace  SLTBS read only
+
+sql statement: create or replace directory TSPITR_DIROBJ_DPDIR as ''/u02/oradbcdb/aux''
+
+sql statement: create or replace directory TSPITR_DIROBJ_DPDIR as ''/u02/oradbcdb/aux''
+
+Performing export of metadata...
+   EXPDP> Starting "SYS"."TSPITR_EXP_gAxE_Beax":  
+   EXPDP> Processing object type TRANSPORTABLE_EXPORT/INDEX/STATISTICS/INDEX_STATISTICS
+   EXPDP> Processing object type TRANSPORTABLE_EXPORT/STATISTICS/TABLE_STATISTICS
+   EXPDP> Processing object type TRANSPORTABLE_EXPORT/STATISTICS/MARKER
+   EXPDP> Processing object type TRANSPORTABLE_EXPORT/PLUGTS_BLK
+   EXPDP> Processing object type TRANSPORTABLE_EXPORT/POST_INSTANCE/PLUGTS_BLK
+   EXPDP> Processing object type TRANSPORTABLE_EXPORT/TABLE
+   EXPDP> Processing object type TRANSPORTABLE_EXPORT/CONSTRAINT/CONSTRAINT
+   EXPDP> Master table "SYS"."TSPITR_EXP_gAxE_Beax" successfully loaded/unloaded
+   EXPDP> ******************************************************************************
+   EXPDP> Dump file set for SYS.TSPITR_EXP_gAxE_Beax is:
+   EXPDP>   /u02/oradbcdb/aux/tspitr_gAxE_53688.dmp
+   EXPDP> ******************************************************************************
+   EXPDP> Datafiles required for transportable tablespace SLTBS:
+   EXPDP>   /u02/oradata/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_sltbs_odhqgrkt_.dbf
+   EXPDP> Job "SYS"."TSPITR_EXP_gAxE_Beax" successfully completed at Mon Nov 16 20:20:53 2026 elapsed 0 00:01:25
+Export completed
+
+
+contents of Memory Script:
+{
+# shutdown clone before import
+shutdown clone abort
+# drop target tablespaces before importing them back
+sql 'PDB2' 'drop tablespace 
+ SLTBS including contents keep datafiles cascade constraints';
+}
+executing Memory Script
+
+Oracle instance shut down
+
+sql statement: drop tablespace  SLTBS including contents keep datafiles cascade constraints
+
+Performing import of metadata...
+   IMPDP> Master table "SYS"."TSPITR_IMP_gAxE_BmpA" successfully loaded/unloaded
+   IMPDP> Starting "SYS"."TSPITR_IMP_gAxE_BmpA":  
+   IMPDP> Processing object type TRANSPORTABLE_EXPORT/PLUGTS_BLK
+   IMPDP> Processing object type TRANSPORTABLE_EXPORT/TABLE
+   IMPDP> Processing object type TRANSPORTABLE_EXPORT/CONSTRAINT/CONSTRAINT
+   IMPDP> Processing object type TRANSPORTABLE_EXPORT/INDEX/STATISTICS/INDEX_STATISTICS
+   IMPDP> Processing object type TRANSPORTABLE_EXPORT/STATISTICS/TABLE_STATISTICS
+   IMPDP> Processing object type TRANSPORTABLE_EXPORT/STATISTICS/MARKER
+   IMPDP> Processing object type TRANSPORTABLE_EXPORT/POST_INSTANCE/PLUGTS_BLK
+   IMPDP> Job "SYS"."TSPITR_IMP_gAxE_BmpA" successfully completed at Mon Nov 16 20:22:39 2026 elapsed 0 00:01:02
+Import completed
+
+
+contents of Memory Script:
+{
+# make read write and offline the imported tablespaces
+sql 'PDB2' 'alter tablespace 
+ SLTBS read write';
+sql 'PDB2' 'alter tablespace 
+ SLTBS offline';
+# enable autobackups after TSPITR is finished
+sql 'begin dbms_backup_restore.AutoBackupFlag(TRUE); end;';
+}
+executing Memory Script
+
+sql statement: alter tablespace  SLTBS read write
+
+sql statement: alter tablespace  SLTBS offline
+
+sql statement: begin dbms_backup_restore.AutoBackupFlag(TRUE); end;
+
+Removing automatic instance
+Automatic instance removed
+auxiliary instance file /u02/oradbcdb/aux/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_temp_ohporrm9_.tmp deleted
+auxiliary instance file /u02/oradbcdb/aux/ORADBCDB/datafile/o1_mf_temp_ohporf6l_.tmp deleted
+auxiliary instance file /u02/oradbcdb/aux/ORADBCDB/onlinelog/o1_mf_2_ohpopxxx_.log deleted
+auxiliary instance file /u02/oradbcdb/aux/ORADBCDB/onlinelog/o1_mf_1_ohpopxqg_.log deleted
+auxiliary instance file /u02/oradbcdb/aux/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_sysaux_ohpoo8sy_.dbf deleted
+auxiliary instance file /u02/oradbcdb/aux/ORADBCDB/datafile/o1_mf_sysaux_ohpoo1ql_.dbf deleted
+auxiliary instance file /u02/oradbcdb/aux/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_undotbs1_ohponyop_.dbf deleted
+auxiliary instance file /u02/oradbcdb/aux/ORADBCDB/datafile/o1_mf_undotbs1_ohponvm4_.dbf deleted
+auxiliary instance file /u02/oradbcdb/aux/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_system_ohponnkj_.dbf deleted
+auxiliary instance file /u02/oradbcdb/aux/ORADBCDB/datafile/o1_mf_system_ohpon5cn_.dbf deleted
+auxiliary instance file /u02/oradbcdb/aux/ORADBCDB/controlfile/o1_mf_ohpomfjg_.ctl deleted
+auxiliary instance file tspitr_gAxE_53688.dmp deleted
+Finished recover at 16-NOV-26
+
+RMAN> exit
+
+
+Recovery Manager complete.
+[oracle@pvm1 ~]$ sqlplus / a s susysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Mon Nov 16 20:23:53 2026
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> ALTER SESSION SET CONTAINER = PDB2;
+
+Session altered.
+
+SQL> ALTER TABLESPACE SLTBS ONLINE;
+
+Tablespace altered.
+
+SQL> conn pdb2_intern@pdb2
+Enter password: 
+Connected.
+SQL> SELECT * FROM ENGINEERINGSTUDENTS;
+
+STUDENT_ID FIRST_NAME			  LAST_NAME
+---------- ------------------------------ ------------------------------
+       AGE GENDER     DEPARTMENT	   ACADEMIC_YEAR
+---------- ---------- -------------------- -------------
+    226110 Abdur-Rasheed		  Ibrahim
+	24 Male       Mechanical		       4
+
+    226120 Esther			  Okafor
+	21 Female     Mechatronics		       3
+
+    226130 Zulfah			  Kolawole
+	22 Female     Electrical		       3
+
+
+STUDENT_ID FIRST_NAME			  LAST_NAME
+---------- ------------------------------ ------------------------------
+       AGE GENDER     DEPARTMENT	   ACADEMIC_YEAR
+---------- ---------- -------------------- -------------
+    226140 David			  Adams
+	21 Male       Mechatronics		       2
+
+    226150 Isa				  Danjuma
+	19 Male       Electrical		       2
+
+
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@pvm1 ~]$ rman target "'C##U1BCK/KLmn#479@ORADBCDB as sysbackup'"
+
+Recovery Manager: Release 19.0.0.0.0 - Production on Mon Nov 16 20:32:29 2026
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+connected to target database: ORADBCDB (DBID=2274470866)
+
+RMAN> BACKUP AS BACKUPSET INCREMENTAL LEVEL 0
+2> FORMAT '/u02/oradbcdb/backups/bkp_l0_%U'
+3> TAG 'FULL_DB_BKP'
+4> DATABASE PLUS ARCHIVELOG DELETE ALL INPUT;
+
+
+Starting backup at 16-NOV-26
+current log archived
+using target database control file instead of recovery catalog
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=271 device type=DISK
+archived log /u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_14/o1_mf_1_17_ohjk5h3v_.arc not found or out of sync with catalog
+trying alternate file for archived log of thread 1 with sequence 17
+archived log /u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_14/o1_mf_1_18_ohjml75r_.arc not found or out of sync with catalog
+trying alternate file for archived log of thread 1 with sequence 18
+archived log /u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_19_ohpn8hq7_.arc not found or out of sync with catalog
+trying alternate file for archived log of thread 1 with sequence 19
+archived log /u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_20_ohpnr2n9_.arc not found or out of sync with catalog
+trying alternate file for archived log of thread 1 with sequence 20
+channel ORA_DISK_1: starting archived log backup set
+channel ORA_DISK_1: specifying archived log(s) in backup set
+input archived log thread=1 sequence=17 RECID=65 STAMP=1249302207
+input archived log thread=1 sequence=18 RECID=67 STAMP=1249304666
+input archived log thread=1 sequence=19 RECID=69 STAMP=1249501985
+input archived log thread=1 sequence=20 RECID=71 STAMP=1249502482
+input archived log thread=1 sequence=21 RECID=72 STAMP=1249503371
+input archived log thread=1 sequence=22 RECID=74 STAMP=1249505286
+channel ORA_DISK_1: starting piece 1 at 16-NOV-26
+channel ORA_DISK_1: finished piece 1 at 16-NOV-26
+piece handle=/u02/oradbcdb/backups/bkp_l0_2n57js08_1_1 tag=FULL_DB_BKP comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:03
+channel ORA_DISK_1: deleting archived log(s)
+archived log file name=/u02/oradbcdb/other_log_area/1_17_1247693279.dbf RECID=65 STAMP=1249302207
+archived log file name=/u02/oradbcdb/other_log_area/1_18_1247693279.dbf RECID=67 STAMP=1249304666
+archived log file name=/u02/oradbcdb/other_log_area/1_19_1247693279.dbf RECID=69 STAMP=1249501985
+archived log file name=/u02/oradbcdb/other_log_area/1_20_1247693279.dbf RECID=71 STAMP=1249502482
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_21_ohpomtw5_.arc RECID=72 STAMP=1249503371
+archived log file name=/u02/oradbcdb/other_log_area/1_21_1247693279.dbf RECID=73 STAMP=1249503371
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_22_ohpqhnt4_.arc RECID=74 STAMP=1249505286
+archived log file name=/u02/oradbcdb/other_log_area/1_22_1247693279.dbf RECID=75 STAMP=1249505286
+Finished backup at 16-NOV-26
+
+Starting backup at 16-NOV-26
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting incremental level 0 datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00001 name=/u02/oradata/ORADBCDB/system01.dbf
+input datafile file number=00003 name=/u02/oradata/ORADBCDB/sysaux01.dbf
+input datafile file number=00004 name=/u02/oradata/ORADBCDB/undotbs01.dbf
+input datafile file number=00018 name=/u02/oradata/ORADBCDB/datafile/o1_mf_sltbs_odo0q9dc_.dbf
+input datafile file number=00007 name=/u02/oradata/ORADBCDB/users01.dbf
+channel ORA_DISK_1: starting piece 1 at 16-NOV-26
+channel ORA_DISK_1: finished piece 1 at 16-NOV-26
+piece handle=/u02/oradbcdb/backups/bkp_l0_2o57js0e_1_1 tag=FULL_DB_BKP comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:15
+channel ORA_DISK_1: starting incremental level 0 datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00010 name=/u02/oradata/ORADBCDB/pdb1/sysaux01.dbf
+input datafile file number=00009 name=/u02/oradata/ORADBCDB/pdb1/system01.dbf
+input datafile file number=00016 name=/u02/oradata/ORADBCDB/5C3CEE1422A528D2E0636A38A8C057D3/datafile/o1_mf_nxtbs_oddz9vg7_.dbf
+input datafile file number=00011 name=/u02/oradata/ORADBCDB/pdb1/undotbs01.dbf
+input datafile file number=00012 name=/u02/oradata/ORADBCDB/pdb1/users01.dbf
+channel ORA_DISK_1: starting piece 1 at 16-NOV-26
+channel ORA_DISK_1: finished piece 1 at 16-NOV-26
+piece handle=/u02/oradbcdb/backups/bkp_l0_2p57js0t_1_1 tag=FULL_DB_BKP comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:07
+channel ORA_DISK_1: starting incremental level 0 datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00014 name=/u02/oradata/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_sysaux_ocjbj1hp_.dbf
+input datafile file number=00013 name=/u02/oradata/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_system_ocjbj1h9_.dbf
+input datafile file number=00019 name=/u02/oradata/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_sltbs_odhqgrkt_.dbf
+input datafile file number=00015 name=/u02/oradata/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_undotbs1_ocjbj1hq_.dbf
+channel ORA_DISK_1: starting piece 1 at 16-NOV-26
+channel ORA_DISK_1: finished piece 1 at 16-NOV-26
+piece handle=/u02/oradbcdb/backups/bkp_l0_2q57js14_1_1 tag=FULL_DB_BKP comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:08
+channel ORA_DISK_1: starting incremental level 0 datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00006 name=/u02/oradata/ORADBCDB/pdbseed/sysaux01.dbf
+input datafile file number=00005 name=/u02/oradata/ORADBCDB/pdbseed/system01.dbf
+input datafile file number=00008 name=/u02/oradata/ORADBCDB/pdbseed/undotbs01.dbf
+channel ORA_DISK_1: starting piece 1 at 16-NOV-26
+channel ORA_DISK_1: finished piece 1 at 16-NOV-26
+piece handle=/u02/oradbcdb/backups/bkp_l0_2r57js1c_1_1 tag=FULL_DB_BKP comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:07
+Finished backup at 16-NOV-26
+
+Starting backup at 16-NOV-26
+current log archived
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting archived log backup set
+channel ORA_DISK_1: specifying archived log(s) in backup set
+input archived log thread=1 sequence=23 RECID=76 STAMP=1249505332
+channel ORA_DISK_1: starting piece 1 at 16-NOV-26
+channel ORA_DISK_1: finished piece 1 at 16-NOV-26
+piece handle=/u02/oradbcdb/backups/bkp_l0_2s57js1k_1_1 tag=FULL_DB_BKP comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:01
+channel ORA_DISK_1: deleting archived log(s)
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_23_ohpqk3qv_.arc RECID=76 STAMP=1249505332
+archived log file name=/u02/oradbcdb/other_log_area/1_23_1247693279.dbf RECID=77 STAMP=1249505332
+Finished backup at 16-NOV-26
+
+Starting Control File and SPFILE Autobackup at 16-NOV-26
+piece handle=/u02/oradbcdb/backups/ctl_bk_c-2274470866-20261116-01 comment=NONE
+Finished Control File and SPFILE Autobackup at 16-NOV-26
+
+RMAN> LIST BACKUP SUMMARY;
+
+
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time #Pieces #Copies Compressed Tag
+------- -- -- - ----------- --------------- ------- ------- ---------- ---
+23      B  A  A DISK        10-NOV-26       1       1       NO         ARCH_BKP
+25      B  1  A DISK        10-NOV-26       1       1       NO         WHOLE_LEVEL_0
+26      B  1  A DISK        10-NOV-26       1       1       NO         WHOLE_LEVEL_0
+27      B  1  A DISK        10-NOV-26       1       1       NO         WHOLE_LEVEL_0
+28      B  A  A DISK        10-NOV-26       1       1       NO         ARCH_BKP
+29      B  F  A DISK        10-NOV-26       1       1       NO         TAG20261110T122101
+30      B  F  A DISK        16-NOV-26       1       1       NO         TAG20261116T203005
+31      B  A  A DISK        16-NOV-26       1       1       NO         FULL_DB_BKP
+32      B  0  A DISK        16-NOV-26       1       1       NO         FULL_DB_BKP
+33      B  0  A DISK        16-NOV-26       1       1       NO         FULL_DB_BKP
+34      B  0  A DISK        16-NOV-26       1       1       NO         FULL_DB_BKP
+35      B  0  A DISK        16-NOV-26       1       1       NO         FULL_DB_BKP
+36      B  A  A DISK        16-NOV-26       1       1       NO         FULL_DB_BKP
+37      B  F  A DISK        16-NOV-26       1       1       NO         TAG20261116T204854
+
+RMAN> RESTORE DATABASE VALIDATE;
+
+Starting restore at 16-NOV-26
+using channel ORA_DISK_1
+
+channel ORA_DISK_1: scanning datafile copy /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-5_255733kh
+channel ORA_DISK_1: scanning datafile copy /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-6_215733ju
+channel ORA_DISK_1: scanning datafile copy /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-8_295733ku
+channel ORA_DISK_1: starting validation of datafile backup set
+channel ORA_DISK_1: reading from backup piece /u02/oradbcdb/backups/bkp_l0_2o57js0e_1_1
+channel ORA_DISK_1: piece handle=/u02/oradbcdb/backups/bkp_l0_2o57js0e_1_1 tag=FULL_DB_BKP
+channel ORA_DISK_1: restored backup piece 1
+channel ORA_DISK_1: validation complete, elapsed time: 00:00:09
+channel ORA_DISK_1: starting validation of datafile backup set
+channel ORA_DISK_1: reading from backup piece /u02/oradbcdb/backups/bkp_l0_2p57js0t_1_1
+channel ORA_DISK_1: piece handle=/u02/oradbcdb/backups/bkp_l0_2p57js0t_1_1 tag=FULL_DB_BKP
+channel ORA_DISK_1: restored backup piece 1
+channel ORA_DISK_1: validation complete, elapsed time: 00:00:03
+channel ORA_DISK_1: starting validation of datafile backup set
+channel ORA_DISK_1: reading from backup piece /u02/oradbcdb/backups/bkp_l0_2q57js14_1_1
+channel ORA_DISK_1: piece handle=/u02/oradbcdb/backups/bkp_l0_2q57js14_1_1 tag=FULL_DB_BKP
+channel ORA_DISK_1: restored backup piece 1
+channel ORA_DISK_1: validation complete, elapsed time: 00:00:04
+Finished restore at 16-NOV-26
+
+RMAN> REPORT OBSOLETE;
+
+RMAN retention policy will be applied to the command
+RMAN retention policy is set to redundancy 1
+Report of obsolete backups and copies
+Type                 Key    Completion Time    Filename/Handle
+-------------------- ------ ------------------ --------------------
+Datafile Copy        66     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-1_1t5733i7
+Datafile Copy        67     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-3_1u5733j0
+Datafile Copy        68     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-10_1v5733jg
+Datafile Copy        69     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-14_205733jn
+Datafile Copy        71     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-9_225733k7
+Datafile Copy        72     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-13_235733kb
+Datafile Copy        73     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-4_245733ke
+Datafile Copy        75     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SLTBS_FNO-18_265733kk
+Datafile Copy        76     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-NXTBS_FNO-16_275733ko
+Datafile Copy        77     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SLTBS_FNO-17_285733kr
+Datafile Copy        79     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-11_2a5733l1
+Datafile Copy        80     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-15_2b5733l5
+Datafile Copy        81     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-USERS_FNO-7_2c5733l8
+Datafile Copy        82     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-USERS_FNO-12_2d5733l9
+Backup Set           23     10-NOV-26         
+  Backup Piece       25     10-NOV-26          /u02/oradbcdb/backups/arch_2e5733lc_1_1
+Backup Set           25     10-NOV-26         
+  Backup Piece       27     10-NOV-26          /u02/oradbcdb/backups/bkp_l1_2g57340s_1_1
+Backup Set           26     10-NOV-26         
+  Backup Piece       28     10-NOV-26          /u02/oradbcdb/backups/bkp_l1_2h573413_1_1
+Backup Set           27     10-NOV-26         
+  Backup Piece       29     10-NOV-26          /u02/oradbcdb/backups/bkp_l1_2i573417_1_1
+Backup Set           28     10-NOV-26         
+  Backup Piece       30     10-NOV-26          /u02/oradbcdb/backups/arch_2k57341b_1_1
+Archive Log          64     14-NOV-26          /u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_14/o1_mf_1_17_ohjk5h3v_.arc
+Backup Set           29     10-NOV-26         
+  Backup Piece       31     10-NOV-26          /u02/oradbcdb/backups/ctl_bk_c-2274470866-20261110-02
+Archive Log          66     14-NOV-26          /u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_14/o1_mf_1_18_ohjml75r_.arc
+Archive Log          68     16-NOV-26          /u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_19_ohpn8hq7_.arc
+Archive Log          70     16-NOV-26          /u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_20_ohpnr2n9_.arc
+Backup Set           30     16-NOV-26         
+  Backup Piece       32     16-NOV-26          /u02/oradbcdb/backups/ctl_bk_c-2274470866-20261116-00
+Backup Set           31     16-NOV-26         
+  Backup Piece       33     16-NOV-26          /u02/oradbcdb/backups/bkp_l0_2n57js08_1_1
+Backup Set           35     16-NOV-26         
+  Backup Piece       37     16-NOV-26          /u02/oradbcdb/backups/bkp_l0_2r57js1c_1_1
+
+RMAN> exit
+
+
+Recovery Manager complete.
+[oracle@pvm1 ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Mon Nov 16 21:00:50 2026
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> SHUTDOWN IMMEDIATE
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@pvm1 ~]$ exit
+logout
+[root@pvm1 ~]# mountpoint /u03
+/u03 is not a mountpoint
+[root@pvm1 ~]# find /u03 -type f
+[root@pvm1 ~]# mount /u03
+[root@pvm1 ~]# df -Th /u03
+Filesystem     Type  Size  Used Avail Use% Mounted on
+/dev/sdb1      ext4   12G  468M   11G   5% /u03
+[root@pvm1 ~]# ls -l /u03/oradbcdb
+total 4
+drwxrwxr-x. 3 oracle oinstall 4096 Oct 31 16:06 fast_recovery_area
+[root@pvm1 ~]# su - oracle
+Last login: Mon Nov 16 20:12:05 WAT 2026 on pts/1
+sql[oracle@pvm1 ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Mon Nov 16 21:06:18 2026
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Connected to an idle instance.
+
+SQL> STARTUP
+ORACLE instance started.
+
+Total System Global Area 4294963960 bytes
+Fixed Size		    9143032 bytes
+Variable Size		 2382364672 bytes
+Database Buffers	 1895825408 bytes
+Redo Buffers		    7630848 bytes
+Database mounted.
+Database opened.
+SQL> SHOW PDBS
+
+    CON_ID CON_NAME			  OPEN MODE  RESTRICTED
+---------- ------------------------------ ---------- ----------
+	 2 PDB$SEED			  READ ONLY  NO
+	 3 PDB1 			  READ WRITE NO
+	 4 PDB2 			  READ WRITE NO
+SQL> COL GROUP# FOR 999
+SQL> COL MEMBER FOR A70
+SQL> COL STATUS FOR A10
+SQL> SET PAGESIZE 20
+SQL> SET LINESIZE 180
+SQL> SELECT group#, member, status FROM V$LOGFILE ORDER BY 1;
+
+GROUP# MEMBER								      STATUS
+------ ---------------------------------------------------------------------- ----------
+     1 /u03/oradbcdb/fast_recovery_area/ORADBCDB/onlinelog/o1_mf_1_ogd191od_.
+       log
+
+     1 /u02/oradbcdb/other_log_area/ORADBCDB/onlinelog/o1_mf_1_ogd19208_.log
+     2 /u02/oradbcdb/other_log_area/ORADBCDB/onlinelog/o1_mf_2_ogd1dppr_.log
+     2 /u03/oradbcdb/fast_recovery_area/ORADBCDB/onlinelog/o1_mf_2_ogd1dmnw_.
+       log
+
+
+SQL> ALTER SYSTEM SWITCH LOGFILE;
+
+System altered.
+
+SQL> ALTER SYSTEM SWITCH LOGFILE;
+
+System altered.
+
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@pvm1 ~]$ ls -l /u02/oradbcdb/other_log_area/ORADBCDB/onlinelog/
+total 409608
+-rw-rw----. 1 oracle oracle 209715712 Nov 16 21:12 o1_mf_1_ogd19208_.log
+-rw-rw----. 1 oracle oracle 209715712 Nov 16 21:12 o1_mf_2_ogd1dppr_.log
+[oracle@pvm1 ~]$ ls -l /u03/oradbcdb/fast_recovery_area/ORADBCDB/onlinelog/
+total 409608
+-rw-rw----. 1 oracle oracle 209715712 Nov 16 21:12 o1_mf_1_ogd191od_.log
+-rw-rw----. 1 oracle oracle 209715712 Nov 16 21:12 o1_mf_2_ogd1dmnw_.log
+[oracle@pvm1 ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Mon Nov 16 21:14:02 2026
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> SELECT dest_id, status, error FROM V$ARCHIVE_DEST WHERE dest_id IN (1,2);
+
+   DEST_ID STATUS
+---------- ---------
+ERROR
+-----------------------------------------------------------------
+	 1 VALID
+
+
+	 2 VALID
+
+
+
+SQL> ALTER SYSTEM ARCHIVE LOG CURRENT;
+
+System altered.
+
+SQL> SELECT sequence#, name FROM V$ARCHIVED_LOG WHERE name IS NOT NULL
+  ORDER BY sequence# DESC FETCH FIRST 6 ROWS ONLY;  2  
+
+ SEQUENCE#
+----------
+NAME
+--------------------------------------------------------------------------------
+	28
+/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_28_ohps0
+t3w_.arc
+
+	28
+/u02/oradbcdb/other_log_area/1_28_1247693279.dbf
+
+	27
+/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_27_ohprx
+
+ SEQUENCE#
+----------
+NAME
+--------------------------------------------------------------------------------
+lz7_.arc
+
+	27
+/u02/oradbcdb/other_log_area/1_27_1247693279.dbf
+
+	26
+/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_26_ohprx
+b4b_.arc
+
+
+ SEQUENCE#
+----------
+NAME
+--------------------------------------------------------------------------------
+	26
+/u02/oradbcdb/other_log_area/1_26_1247693279.dbf
+
+
+6 rows selected.
+
+SQL> SELECT GROUP#, SEQUENCE#, BYTES/1024/1024, MEMBERS, ARCHIVED, STATUS
+  2  FROM V$LOG
+  3  ORDER BY GROUP#;
+
+    GROUP#  SEQUENCE# BYTES/1024/1024	 MEMBERS ARC STATUS
+---------- ---------- --------------- ---------- --- ----------------
+	 1	   28		  200	       2 YES INACTIVE
+	 2	   29		  200	       2 NO  CURRENT
+
+SQL> ^CE
+
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@pvm1 ~]$ rman target "'C##U1BCK/KLmn#479@ORADBCDB as sysbackup'"
+
+Recovery Manager: Release 19.0.0.0.0 - Production on Mon Nov 16 21:17:00 2026
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+connected to target database: ORADBCDB (DBID=2274470866)
+
+RMAN> CROSSCHECK ARCHIVELOG ALL;
+
+using target database control file instead of recovery catalog
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=278 device type=DISK
+validation succeeded for archived log
+archived log file name=/u02/oradbcdb/other_log_area/1_26_1247693279.dbf RECID=83 STAMP=1249506746
+validation succeeded for archived log
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_26_ohprxb4b_.arc RECID=82 STAMP=1249506746
+validation succeeded for archived log
+archived log file name=/u02/oradbcdb/other_log_area/1_27_1247693279.dbf RECID=85 STAMP=1249506755
+validation succeeded for archived log
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_27_ohprxlz7_.arc RECID=84 STAMP=1249506755
+validation succeeded for archived log
+archived log file name=/u02/oradbcdb/other_log_area/1_28_1247693279.dbf RECID=87 STAMP=1249506858
+validation succeeded for archived log
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_28_ohps0t3w_.arc RECID=86 STAMP=1249506858
+Crosschecked 6 objects
+
+
+RMAN> CROSSCHECK BACKUP;
+
+using channel ORA_DISK_1
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u02/oradbcdb/backups/arch_2e5733lc_1_1 RECID=25 STAMP=1248956076
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u02/oradbcdb/backups/bkp_l1_2g57340s_1_1 RECID=27 STAMP=1248956444
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u02/oradbcdb/backups/bkp_l1_2h573413_1_1 RECID=28 STAMP=1248956452
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u02/oradbcdb/backups/bkp_l1_2i573417_1_1 RECID=29 STAMP=1248956455
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u02/oradbcdb/backups/arch_2k57341b_1_1 RECID=30 STAMP=1248956459
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u02/oradbcdb/backups/ctl_bk_c-2274470866-20261110-02 RECID=31 STAMP=1248956461
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u02/oradbcdb/backups/ctl_bk_c-2274470866-20261116-00 RECID=32 STAMP=1249504206
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u02/oradbcdb/backups/bkp_l0_2n57js08_1_1 RECID=33 STAMP=1249505288
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u02/oradbcdb/backups/bkp_l0_2o57js0e_1_1 RECID=34 STAMP=1249505294
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u02/oradbcdb/backups/bkp_l0_2p57js0t_1_1 RECID=35 STAMP=1249505309
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u02/oradbcdb/backups/bkp_l0_2q57js14_1_1 RECID=36 STAMP=1249505317
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u02/oradbcdb/backups/bkp_l0_2r57js1c_1_1 RECID=37 STAMP=1249505324
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u02/oradbcdb/backups/bkp_l0_2s57js1k_1_1 RECID=38 STAMP=1249505332
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u02/oradbcdb/backups/ctl_bk_c-2274470866-20261116-01 RECID=39 STAMP=1249505335
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u02/oradbcdb/backups/arch_2u57jsne_1_1 RECID=40 STAMP=1249506030
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u02/oradbcdb/backups/ctl_bk_c-2274470866-20261116-02 RECID=41 STAMP=1249506033
+Crosschecked 16 objects
+
+
+RMAN> REPORT OBSOLETE;
+
+RMAN retention policy will be applied to the command
+RMAN retention policy is set to redundancy 1
+Report of obsolete backups and copies
+Type                 Key    Completion Time    Filename/Handle
+-------------------- ------ ------------------ --------------------
+Datafile Copy        66     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-1_1t5733i7
+Datafile Copy        67     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-3_1u5733j0
+Datafile Copy        68     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-10_1v5733jg
+Datafile Copy        69     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-14_205733jn
+Datafile Copy        71     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-9_225733k7
+Datafile Copy        72     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-13_235733kb
+Datafile Copy        73     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-4_245733ke
+Datafile Copy        75     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SLTBS_FNO-18_265733kk
+Datafile Copy        76     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-NXTBS_FNO-16_275733ko
+Datafile Copy        77     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SLTBS_FNO-17_285733kr
+Datafile Copy        79     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-11_2a5733l1
+Datafile Copy        80     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-15_2b5733l5
+Datafile Copy        81     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-USERS_FNO-7_2c5733l8
+Datafile Copy        82     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-USERS_FNO-12_2d5733l9
+Backup Set           23     10-NOV-26         
+  Backup Piece       25     10-NOV-26          /u02/oradbcdb/backups/arch_2e5733lc_1_1
+Backup Set           25     10-NOV-26         
+  Backup Piece       27     10-NOV-26          /u02/oradbcdb/backups/bkp_l1_2g57340s_1_1
+Backup Set           26     10-NOV-26         
+  Backup Piece       28     10-NOV-26          /u02/oradbcdb/backups/bkp_l1_2h573413_1_1
+Backup Set           27     10-NOV-26         
+  Backup Piece       29     10-NOV-26          /u02/oradbcdb/backups/bkp_l1_2i573417_1_1
+Backup Set           28     10-NOV-26         
+  Backup Piece       30     10-NOV-26          /u02/oradbcdb/backups/arch_2k57341b_1_1
+Backup Set           29     10-NOV-26         
+  Backup Piece       31     10-NOV-26          /u02/oradbcdb/backups/ctl_bk_c-2274470866-20261110-02
+Backup Set           30     16-NOV-26         
+  Backup Piece       32     16-NOV-26          /u02/oradbcdb/backups/ctl_bk_c-2274470866-20261116-00
+Backup Set           31     16-NOV-26         
+  Backup Piece       33     16-NOV-26          /u02/oradbcdb/backups/bkp_l0_2n57js08_1_1
+Backup Set           35     16-NOV-26         
+  Backup Piece       37     16-NOV-26          /u02/oradbcdb/backups/bkp_l0_2r57js1c_1_1
+Backup Set           37     16-NOV-26         
+  Backup Piece       39     16-NOV-26          /u02/oradbcdb/backups/ctl_bk_c-2274470866-20261116-01
+
+RMAN> ^C
+user interrupt received
+
+
+RMAN> DELETE OBSOLETE;
+
+RMAN retention policy will be applied to the command
+RMAN retention policy is set to redundancy 1
+using channel ORA_DISK_1
+Deleting the following obsolete backups and copies:
+Type                 Key    Completion Time    Filename/Handle
+-------------------- ------ ------------------ --------------------
+Datafile Copy        66     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-1_1t5733i7
+Datafile Copy        67     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-3_1u5733j0
+Datafile Copy        68     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-10_1v5733jg
+Datafile Copy        69     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-14_205733jn
+Datafile Copy        71     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-9_225733k7
+Datafile Copy        72     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-13_235733kb
+Datafile Copy        73     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-4_245733ke
+Datafile Copy        75     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SLTBS_FNO-18_265733kk
+Datafile Copy        76     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-NXTBS_FNO-16_275733ko
+Datafile Copy        77     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SLTBS_FNO-17_285733kr
+Datafile Copy        79     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-11_2a5733l1
+Datafile Copy        80     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-15_2b5733l5
+Datafile Copy        81     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-USERS_FNO-7_2c5733l8
+Datafile Copy        82     10-NOV-26          /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-USERS_FNO-12_2d5733l9
+Backup Set           23     10-NOV-26         
+  Backup Piece       25     10-NOV-26          /u02/oradbcdb/backups/arch_2e5733lc_1_1
+Backup Set           25     10-NOV-26         
+  Backup Piece       27     10-NOV-26          /u02/oradbcdb/backups/bkp_l1_2g57340s_1_1
+Backup Set           26     10-NOV-26         
+  Backup Piece       28     10-NOV-26          /u02/oradbcdb/backups/bkp_l1_2h573413_1_1
+Backup Set           27     10-NOV-26         
+  Backup Piece       29     10-NOV-26          /u02/oradbcdb/backups/bkp_l1_2i573417_1_1
+Backup Set           28     10-NOV-26         
+  Backup Piece       30     10-NOV-26          /u02/oradbcdb/backups/arch_2k57341b_1_1
+Backup Set           29     10-NOV-26         
+  Backup Piece       31     10-NOV-26          /u02/oradbcdb/backups/ctl_bk_c-2274470866-20261110-02
+Backup Set           30     16-NOV-26         
+  Backup Piece       32     16-NOV-26          /u02/oradbcdb/backups/ctl_bk_c-2274470866-20261116-00
+Backup Set           31     16-NOV-26         
+  Backup Piece       33     16-NOV-26          /u02/oradbcdb/backups/bkp_l0_2n57js08_1_1
+Backup Set           35     16-NOV-26         
+  Backup Piece       37     16-NOV-26          /u02/oradbcdb/backups/bkp_l0_2r57js1c_1_1
+Backup Set           37     16-NOV-26         
+  Backup Piece       39     16-NOV-26          /u02/oradbcdb/backups/ctl_bk_c-2274470866-20261116-01
+
+Do you really want to delete the above objects (enter YES or NO)? YES
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-1_1t5733i7 RECID=66 STAMP=1248955990
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-3_1u5733j0 RECID=67 STAMP=1248956009
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-10_1v5733jg RECID=68 STAMP=1248956019
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-14_205733jn RECID=69 STAMP=1248956027
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-9_225733k7 RECID=71 STAMP=1248956042
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-13_235733kb RECID=72 STAMP=1248956045
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-4_245733ke RECID=73 STAMP=1248956048
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SLTBS_FNO-18_265733kk RECID=75 STAMP=1248956054
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-NXTBS_FNO-16_275733ko RECID=76 STAMP=1248956058
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SLTBS_FNO-17_285733kr RECID=77 STAMP=1248956061
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-11_2a5733l1 RECID=79 STAMP=1248956067
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-15_2b5733l5 RECID=80 STAMP=1248956070
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-USERS_FNO-7_2c5733l8 RECID=81 STAMP=1248956072
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-USERS_FNO-12_2d5733l9 RECID=82 STAMP=1248956073
+deleted backup piece
+backup piece handle=/u02/oradbcdb/backups/arch_2e5733lc_1_1 RECID=25 STAMP=1248956076
+deleted backup piece
+backup piece handle=/u02/oradbcdb/backups/bkp_l1_2g57340s_1_1 RECID=27 STAMP=1248956444
+deleted backup piece
+backup piece handle=/u02/oradbcdb/backups/bkp_l1_2h573413_1_1 RECID=28 STAMP=1248956452
+deleted backup piece
+backup piece handle=/u02/oradbcdb/backups/bkp_l1_2i573417_1_1 RECID=29 STAMP=1248956455
+deleted backup piece
+backup piece handle=/u02/oradbcdb/backups/arch_2k57341b_1_1 RECID=30 STAMP=1248956459
+deleted backup piece
+backup piece handle=/u02/oradbcdb/backups/ctl_bk_c-2274470866-20261110-02 RECID=31 STAMP=1248956461
+deleted backup piece
+backup piece handle=/u02/oradbcdb/backups/ctl_bk_c-2274470866-20261116-00 RECID=32 STAMP=1249504206
+deleted backup piece
+backup piece handle=/u02/oradbcdb/backups/bkp_l0_2n57js08_1_1 RECID=33 STAMP=1249505288
+deleted backup piece
+backup piece handle=/u02/oradbcdb/backups/bkp_l0_2r57js1c_1_1 RECID=37 STAMP=1249505324
+deleted backup piece
+backup piece handle=/u02/oradbcdb/backups/ctl_bk_c-2274470866-20261116-01 RECID=39 STAMP=1249505335
+Deleted 24 objects
+
+
+RMAN> exit
+
+
+Recovery Manager complete.
+[oracle@pvm1 ~]$ df -h
+Filesystem           Size  Used Avail Use% Mounted on
+devtmpfs             2.8G     0  2.8G   0% /dev
+tmpfs                2.8G     0  2.8G   0% /dev/shm
+tmpfs                2.8G  9.3M  2.8G   1% /run
+tmpfs                2.8G     0  2.8G   0% /sys/fs/cgroup
+/dev/mapper/ol-root   35G   25G   11G  71% /
+/dev/sda1           1014M  343M  672M  34% /boot
+project_staging      476G  227G  249G  48% /media/sf_project_staging
+tmpfs                564M   12K  564M   1% /run/user/42
+tmpfs                564M     0  564M   0% /run/user/0
+/dev/sdb1             12G  476M   11G   5% /u03
+[oracle@pvm1 ~]$ du -h --max-depth=1 /u02
+4.8G	/u02/oradata
+3.5G	/u02/oradbcdb
+8.2G	/u02
+[oracle@pvm1 ~]$ du -h --max-depth=1 /u02/oradata
+4.8G	/u02/oradata/ORADBCDB
+4.8G	/u02/oradata
+[oracle@pvm1 ~]$ du -h --max-depth=1 /u02/oradata/ORADBCDB
+747M	/u02/oradata/ORADBCDB/pdb1
+701M	/u02/oradata/ORADBCDB/pdbseed
+941M	/u02/oradata/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0
+201M	/u02/oradata/ORADBCDB/5C3CEE1422A528D2E0636A38A8C057D3
+201M	/u02/oradata/ORADBCDB/datafile
+4.8G	/u02/oradata/ORADBCDB
+[oracle@pvm1 ~]$ du -h --max-depth=1 /u02/oradbcdb
+3.0G	/u02/oradbcdb/backups
+409M	/u02/oradbcdb/other_log_area
+101M	/u02/oradbcdb/aux
+3.5G	/u02/oradbcdb
+[oracle@pvm1 ~]$ du -h --max-depth=1 /u03/oradbcdb
+476M	/u03/oradbcdb/fast_recovery_area
+476M	/u03/oradbcdb
+[oracle@pvm1 ~]$ sqlplus / as sysdba
+SQL*Plus: Release 19.0.0.0.0 - Production on Mon Nov 16 21:25:42 2026
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> SHOW PARAMETER CONTROL_FILES
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+control_files			     string	 /u02/oradata/ORADBCDB/control0
+						 1.ctl, /u02/oradata/ORADBCDB/c
+						 ontrol02.ctl
+SQL> host rm '/u02/oradata/ORADBCDB/control01.ctl'
+
+SQL> host rm '/u02/oradata/ORADBCDB/control02.ctl'
+
+SQL> SHUTDOWN ABORT;
+ORACLE instance shut down.
+SQL> STARTUP NOMOUNT;
+ORACLE instance started.
+
+Total System Global Area 4294963960 bytes
+Fixed Size		    9143032 bytes
+Variable Size		 2382364672 bytes
+Database Buffers	 1895825408 bytes
+Redo Buffers		    7630848 bytes
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@pvm1 ~]$ ls -l /u02/oradbcdb/backups
+total 3080492
+-rw-rw----. 1 oracle oracle     330752 Nov 16 21:00 arch_2u57jsne_1_1
+-rw-rw----. 1 oracle oracle 1339564032 Nov 16 20:48 bkp_l0_2o57js0e_1_1
+-rw-rw----. 1 oracle oracle  528941056 Nov 16 20:48 bkp_l0_2p57js0t_1_1
+-rw-rw----. 1 oracle oracle  532676608 Nov 16 20:48 bkp_l0_2q57js14_1_1
+-rw-rw----. 1 oracle oracle       8192 Nov 16 20:48 bkp_l0_2s57js1k_1_1
+-rw-rw----. 1 oracle oracle  346038272 Nov 10 12:13 bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-6_215733ju
+-rw-rw----. 1 oracle oracle  283123712 Nov 10 12:14 bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-5_255733kh
+-rw-rw----. 1 oracle oracle  104865792 Nov 10 12:14 bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-8_295733ku
+-rw-rw----. 1 oracle oracle   18874368 Nov 16 21:00 ctl_bk_c-2274470866-20261116-02
+[oracle@pvm1 ~]$ rman target /
+
+Recovery Manager: Release 19.0.0.0.0 - Production on Mon Nov 16 21:29:13 2026
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+connected to target database: ORADBCDB (not mounted)
+
+RMAN> RUN {
+2> RESTORE CONTROLFILE FROM '/u02/oradbcdb/backups/ctl_bk_c-2274470866-20261116-02';
+3> ALTER DATABASE MOUNT;
+4> RESTORE DATABASE;
+5> RECOVER DATABASE;
+6> }
+
+Starting restore at 16-NOV-26
+using target database control file instead of recovery catalog
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=21 device type=DISK
+
+channel ORA_DISK_1: restoring control file
+channel ORA_DISK_1: restore complete, elapsed time: 00:00:01
+output file name=/u02/oradata/ORADBCDB/control01.ctl
+output file name=/u02/oradata/ORADBCDB/control02.ctl
+Finished restore at 16-NOV-26
+
+released channel: ORA_DISK_1
+Statement processed
+
+Starting restore at 16-NOV-26
+Starting implicit crosscheck backup at 16-NOV-26
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=22 device type=DISK
+Crosschecked 15 objects
+Finished implicit crosscheck backup at 16-NOV-26
+
+Starting implicit crosscheck copy at 16-NOV-26
+using channel ORA_DISK_1
+Crosschecked 17 objects
+Finished implicit crosscheck copy at 16-NOV-26
+
+searching for all files in the recovery area
+cataloging files...
+cataloging done
+
+List of Cataloged Files
+=======================
+File Name: /u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_28_ohps0t3w_.arc
+File Name: /u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_19_ohpn8hq7_.arc
+File Name: /u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_27_ohprxlz7_.arc
+File Name: /u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_20_ohpnr2n9_.arc
+File Name: /u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_26_ohprxb4b_.arc
+File Name: /u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_14/o1_mf_1_17_ohjk5h3v_.arc
+File Name: /u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_14/o1_mf_1_18_ohjml75r_.arc
+
+using channel ORA_DISK_1
+
+skipping datafile 5; already restored to file /u02/oradata/ORADBCDB/pdbseed/system01.dbf
+skipping datafile 6; already restored to file /u02/oradata/ORADBCDB/pdbseed/sysaux01.dbf
+skipping datafile 8; already restored to file /u02/oradata/ORADBCDB/pdbseed/undotbs01.dbf
+channel ORA_DISK_1: starting datafile backup set restore
+channel ORA_DISK_1: specifying datafile(s) to restore from backup set
+channel ORA_DISK_1: restoring datafile 00001 to /u02/oradata/ORADBCDB/system01.dbf
+channel ORA_DISK_1: restoring datafile 00003 to /u02/oradata/ORADBCDB/sysaux01.dbf
+channel ORA_DISK_1: restoring datafile 00004 to /u02/oradata/ORADBCDB/undotbs01.dbf
+channel ORA_DISK_1: restoring datafile 00007 to /u02/oradata/ORADBCDB/users01.dbf
+channel ORA_DISK_1: restoring datafile 00018 to /u02/oradata/ORADBCDB/datafile/o1_mf_sltbs_odo0q9dc_.dbf
+channel ORA_DISK_1: reading from backup piece /u02/oradbcdb/backups/bkp_l0_2o57js0e_1_1
+channel ORA_DISK_1: piece handle=/u02/oradbcdb/backups/bkp_l0_2o57js0e_1_1 tag=FULL_DB_BKP
+channel ORA_DISK_1: restored backup piece 1
+channel ORA_DISK_1: restore complete, elapsed time: 00:00:15
+channel ORA_DISK_1: starting datafile backup set restore
+channel ORA_DISK_1: specifying datafile(s) to restore from backup set
+channel ORA_DISK_1: restoring datafile 00009 to /u02/oradata/ORADBCDB/pdb1/system01.dbf
+channel ORA_DISK_1: restoring datafile 00010 to /u02/oradata/ORADBCDB/pdb1/sysaux01.dbf
+channel ORA_DISK_1: restoring datafile 00011 to /u02/oradata/ORADBCDB/pdb1/undotbs01.dbf
+channel ORA_DISK_1: restoring datafile 00012 to /u02/oradata/ORADBCDB/pdb1/users01.dbf
+channel ORA_DISK_1: restoring datafile 00016 to /u02/oradata/ORADBCDB/5C3CEE1422A528D2E0636A38A8C057D3/datafile/o1_mf_nxtbs_oddz9vg7_.dbf
+channel ORA_DISK_1: reading from backup piece /u02/oradbcdb/backups/bkp_l0_2p57js0t_1_1
+channel ORA_DISK_1: piece handle=/u02/oradbcdb/backups/bkp_l0_2p57js0t_1_1 tag=FULL_DB_BKP
+channel ORA_DISK_1: restored backup piece 1
+channel ORA_DISK_1: restore complete, elapsed time: 00:00:08
+channel ORA_DISK_1: starting datafile backup set restore
+channel ORA_DISK_1: specifying datafile(s) to restore from backup set
+channel ORA_DISK_1: restoring datafile 00013 to /u02/oradata/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_system_ocjbj1h9_.dbf
+channel ORA_DISK_1: restoring datafile 00014 to /u02/oradata/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_sysaux_ocjbj1hp_.dbf
+channel ORA_DISK_1: restoring datafile 00015 to /u02/oradata/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_undotbs1_ocjbj1hq_.dbf
+channel ORA_DISK_1: restoring datafile 00019 to /u02/oradata/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_sltbs_odhqgrkt_.dbf
+channel ORA_DISK_1: reading from backup piece /u02/oradbcdb/backups/bkp_l0_2q57js14_1_1
+channel ORA_DISK_1: piece handle=/u02/oradbcdb/backups/bkp_l0_2q57js14_1_1 tag=FULL_DB_BKP
+channel ORA_DISK_1: restored backup piece 1
+channel ORA_DISK_1: restore complete, elapsed time: 00:00:07
+Finished restore at 16-NOV-26
+
+Starting recover at 16-NOV-26
+using channel ORA_DISK_1
+
+starting media recovery
+
+archived log for thread 1 with sequence 26 is already on disk as file /u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_26_ohprxb4b_.arc
+archived log for thread 1 with sequence 27 is already on disk as file /u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_27_ohprxlz7_.arc
+archived log for thread 1 with sequence 28 is already on disk as file /u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_28_ohps0t3w_.arc
+archived log for thread 1 with sequence 29 is already on disk as file /u02/oradbcdb/other_log_area/ORADBCDB/onlinelog/o1_mf_2_ogd1dppr_.log
+channel ORA_DISK_1: starting archived log restore to default destination
+channel ORA_DISK_1: restoring archived log
+archived log thread=1 sequence=23
+channel ORA_DISK_1: reading from backup piece /u02/oradbcdb/backups/bkp_l0_2s57js1k_1_1
+channel ORA_DISK_1: piece handle=/u02/oradbcdb/backups/bkp_l0_2s57js1k_1_1 tag=FULL_DB_BKP
+channel ORA_DISK_1: restored backup piece 1
+channel ORA_DISK_1: restore complete, elapsed time: 00:00:01
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_23_ohpt3fyh_.arc thread=1 sequence=23
+channel default: deleting archived log(s)
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_23_ohpt3fyh_.arc RECID=93 STAMP=1249507965
+channel ORA_DISK_1: starting archived log restore to default destination
+channel ORA_DISK_1: restoring archived log
+archived log thread=1 sequence=24
+channel ORA_DISK_1: restoring archived log
+archived log thread=1 sequence=25
+channel ORA_DISK_1: reading from backup piece /u02/oradbcdb/backups/arch_2u57jsne_1_1
+channel ORA_DISK_1: piece handle=/u02/oradbcdb/backups/arch_2u57jsne_1_1 tag=TAG20261116T210030
+channel ORA_DISK_1: restored backup piece 1
+channel ORA_DISK_1: restore complete, elapsed time: 00:00:01
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_24_ohpt3hsv_.arc thread=1 sequence=24
+channel default: deleting archived log(s)
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_24_ohpt3hsv_.arc RECID=94 STAMP=1249507967
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_25_ohpt3hv5_.arc thread=1 sequence=25
+channel default: deleting archived log(s)
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_25_ohpt3hv5_.arc RECID=95 STAMP=1249507967
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_26_ohprxb4b_.arc thread=1 sequence=26
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_27_ohprxlz7_.arc thread=1 sequence=27
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_28_ohps0t3w_.arc thread=1 sequence=28
+archived log file name=/u02/oradbcdb/other_log_area/ORADBCDB/onlinelog/o1_mf_2_ogd1dppr_.log thread=1 sequence=29
+media recovery complete, elapsed time: 00:00:12
+Finished recover at 16-NOV-26
+
+RMAN> ^C
+user interrupt received
+
+
+RMAN> ALTER DATABASE OPEN RESETLOGS;
+
+Statement processed
+
+RMAN> CROSSCHECK BACKUP;
+
+using target database control file instead of recovery catalog
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=22 device type=DISK
+crosschecked backup piece: found to be 'EXPIRED'
+backup piece handle=/u02/oradbcdb/backups/arch_2e5733lc_1_1 RECID=25 STAMP=1248956076
+crosschecked backup piece: found to be 'EXPIRED'
+backup piece handle=/u02/oradbcdb/backups/bkp_l1_2g57340s_1_1 RECID=27 STAMP=1248956444
+crosschecked backup piece: found to be 'EXPIRED'
+backup piece handle=/u02/oradbcdb/backups/bkp_l1_2h573413_1_1 RECID=28 STAMP=1248956452
+crosschecked backup piece: found to be 'EXPIRED'
+backup piece handle=/u02/oradbcdb/backups/bkp_l1_2i573417_1_1 RECID=29 STAMP=1248956455
+crosschecked backup piece: found to be 'EXPIRED'
+backup piece handle=/u02/oradbcdb/backups/arch_2k57341b_1_1 RECID=30 STAMP=1248956459
+crosschecked backup piece: found to be 'EXPIRED'
+backup piece handle=/u02/oradbcdb/backups/ctl_bk_c-2274470866-20261110-02 RECID=31 STAMP=1248956461
+crosschecked backup piece: found to be 'EXPIRED'
+backup piece handle=/u02/oradbcdb/backups/ctl_bk_c-2274470866-20261116-00 RECID=32 STAMP=1249504206
+crosschecked backup piece: found to be 'EXPIRED'
+backup piece handle=/u02/oradbcdb/backups/bkp_l0_2n57js08_1_1 RECID=33 STAMP=1249505288
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u02/oradbcdb/backups/bkp_l0_2o57js0e_1_1 RECID=34 STAMP=1249505294
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u02/oradbcdb/backups/bkp_l0_2p57js0t_1_1 RECID=35 STAMP=1249505309
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u02/oradbcdb/backups/bkp_l0_2q57js14_1_1 RECID=36 STAMP=1249505317
+crosschecked backup piece: found to be 'EXPIRED'
+backup piece handle=/u02/oradbcdb/backups/bkp_l0_2r57js1c_1_1 RECID=37 STAMP=1249505324
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u02/oradbcdb/backups/bkp_l0_2s57js1k_1_1 RECID=38 STAMP=1249505332
+crosschecked backup piece: found to be 'EXPIRED'
+backup piece handle=/u02/oradbcdb/backups/ctl_bk_c-2274470866-20261116-01 RECID=39 STAMP=1249505335
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u02/oradbcdb/backups/arch_2u57jsne_1_1 RECID=40 STAMP=1249506030
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u02/oradbcdb/backups/ctl_bk_c-2274470866-20261116-03 RECID=41 STAMP=1249508307
+Crosschecked 16 objects
+
+
+RMAN> CROSSCHECK COPY;
+
+released channel: ORA_DISK_1
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=22 device type=DISK
+specification does not match any control file copy in the repository
+validation failed for datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-1_1t5733i7 RECID=66 STAMP=1248955990
+validation failed for datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-3_1u5733j0 RECID=67 STAMP=1248956009
+validation failed for datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-4_245733ke RECID=73 STAMP=1248956048
+validation succeeded for datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-5_255733kh RECID=74 STAMP=1248956052
+validation succeeded for datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-6_215733ju RECID=70 STAMP=1248956033
+validation failed for datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-USERS_FNO-7_2c5733l8 RECID=81 STAMP=1248956072
+validation succeeded for datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-8_295733ku RECID=78 STAMP=1248956063
+validation failed for datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-9_225733k7 RECID=71 STAMP=1248956042
+validation failed for datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-10_1v5733jg RECID=68 STAMP=1248956019
+validation failed for datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-11_2a5733l1 RECID=79 STAMP=1248956067
+validation failed for datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-USERS_FNO-12_2d5733l9 RECID=82 STAMP=1248956073
+validation failed for datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-13_235733kb RECID=72 STAMP=1248956045
+validation failed for datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-14_205733jn RECID=69 STAMP=1248956027
+validation failed for datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-15_2b5733l5 RECID=80 STAMP=1248956070
+validation failed for datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-NXTBS_FNO-16_275733ko RECID=76 STAMP=1248956058
+validation failed for datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SLTBS_FNO-17_285733kr RECID=77 STAMP=1248956061
+validation failed for datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SLTBS_FNO-18_265733kk RECID=75 STAMP=1248956054
+validation succeeded for archived log
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_14/o1_mf_1_17_ohjk5h3v_.arc RECID=87 STAMP=1249507932
+validation succeeded for archived log
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_14/o1_mf_1_18_ohjml75r_.arc RECID=88 STAMP=1249507932
+validation succeeded for archived log
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_19_ohpn8hq7_.arc RECID=83 STAMP=1249507932
+validation succeeded for archived log
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_20_ohpnr2n9_.arc RECID=85 STAMP=1249507932
+validation succeeded for archived log
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_26_ohprxb4b_.arc RECID=86 STAMP=1249507932
+validation succeeded for archived log
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_27_ohprxlz7_.arc RECID=84 STAMP=1249507932
+validation succeeded for archived log
+archived log file name=/u02/oradbcdb/other_log_area/1_28_1247693279.dbf RECID=97 STAMP=1249508156
+validation succeeded for archived log
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_28_ohpt9dwl_.arc RECID=96 STAMP=1249508156
+validation succeeded for archived log
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_28_ohps0t3w_.arc RECID=82 STAMP=1249507931
+validation succeeded for archived log
+archived log file name=/u02/oradbcdb/other_log_area/1_29_1247693279.dbf RECID=99 STAMP=1249508157
+validation succeeded for archived log
+archived log file name=/u03/oradbcdb/fast_recovery_area/ORADBCDB/archivelog/2026_11_16/o1_mf_1_29_ohpt9f2l_.arc RECID=98 STAMP=1249508157
+Crosschecked 28 objects
+
+
+RMAN> DELETE EXPIRED BACKUP;
+
+using channel ORA_DISK_1
+
+List of Backup Pieces
+BP Key  BS Key  Pc# Cp# Status      Device Type Piece Name
+------- ------- --- --- ----------- ----------- ----------
+25      23      1   1   EXPIRED     DISK        /u02/oradbcdb/backups/arch_2e5733lc_1_1
+27      25      1   1   EXPIRED     DISK        /u02/oradbcdb/backups/bkp_l1_2g57340s_1_1
+28      26      1   1   EXPIRED     DISK        /u02/oradbcdb/backups/bkp_l1_2h573413_1_1
+29      27      1   1   EXPIRED     DISK        /u02/oradbcdb/backups/bkp_l1_2i573417_1_1
+30      28      1   1   EXPIRED     DISK        /u02/oradbcdb/backups/arch_2k57341b_1_1
+31      29      1   1   EXPIRED     DISK        /u02/oradbcdb/backups/ctl_bk_c-2274470866-20261110-02
+32      30      1   1   EXPIRED     DISK        /u02/oradbcdb/backups/ctl_bk_c-2274470866-20261116-00
+33      31      1   1   EXPIRED     DISK        /u02/oradbcdb/backups/bkp_l0_2n57js08_1_1
+37      35      1   1   EXPIRED     DISK        /u02/oradbcdb/backups/bkp_l0_2r57js1c_1_1
+39      37      1   1   EXPIRED     DISK        /u02/oradbcdb/backups/ctl_bk_c-2274470866-20261116-01
+
+Do you really want to delete the above objects (enter YES or NO)? Y
+deleted backup piece
+backup piece handle=/u02/oradbcdb/backups/arch_2e5733lc_1_1 RECID=25 STAMP=1248956076
+deleted backup piece
+backup piece handle=/u02/oradbcdb/backups/bkp_l1_2g57340s_1_1 RECID=27 STAMP=1248956444
+deleted backup piece
+backup piece handle=/u02/oradbcdb/backups/bkp_l1_2h573413_1_1 RECID=28 STAMP=1248956452
+deleted backup piece
+backup piece handle=/u02/oradbcdb/backups/bkp_l1_2i573417_1_1 RECID=29 STAMP=1248956455
+deleted backup piece
+backup piece handle=/u02/oradbcdb/backups/arch_2k57341b_1_1 RECID=30 STAMP=1248956459
+deleted backup piece
+backup piece handle=/u02/oradbcdb/backups/ctl_bk_c-2274470866-20261110-02 RECID=31 STAMP=1248956461
+deleted backup piece
+backup piece handle=/u02/oradbcdb/backups/ctl_bk_c-2274470866-20261116-00 RECID=32 STAMP=1249504206
+deleted backup piece
+backup piece handle=/u02/oradbcdb/backups/bkp_l0_2n57js08_1_1 RECID=33 STAMP=1249505288
+deleted backup piece
+backup piece handle=/u02/oradbcdb/backups/bkp_l0_2r57js1c_1_1 RECID=37 STAMP=1249505324
+deleted backup piece
+backup piece handle=/u02/oradbcdb/backups/ctl_bk_c-2274470866-20261116-01 RECID=39 STAMP=1249505335
+Deleted 10 EXPIRED objects
+
+
+RMAN> DELETE EXPIRED COPY;
+
+released channel: ORA_DISK_1
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=22 device type=DISK
+specification does not match any control file copy in the repository
+specification does not match any archived log in the repository
+List of Datafile Copies
+=======================
+
+Key     File S Completion Time Ckp SCN    Ckp Time        Sparse
+------- ---- - --------------- ---------- --------------- ------
+66      1    X 10-NOV-26       6629721    10-NOV-26       NO    
+        Name: /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-1_1t5733i7
+        Tag: WHOLE_LEVEL_0
+
+67      3    X 10-NOV-26       6629731    10-NOV-26       NO    
+        Name: /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-3_1u5733j0
+        Tag: WHOLE_LEVEL_0
+
+73      4    X 10-NOV-26       6629761    10-NOV-26       NO    
+        Name: /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-4_245733ke
+        Tag: WHOLE_LEVEL_0
+
+81      7    X 10-NOV-26       6629791    10-NOV-26       NO    
+        Name: /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-USERS_FNO-7_2c5733l8
+        Tag: WHOLE_LEVEL_0
+
+71      9    X 10-NOV-26       6629757    10-NOV-26       NO    
+        Name: /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-9_225733k7
+        Tag: WHOLE_LEVEL_0
+        Container ID: 3, PDB Name: PDB1
+
+68      10   X 10-NOV-26       6629747    10-NOV-26       NO    
+        Name: /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-10_1v5733jg
+        Tag: WHOLE_LEVEL_0
+        Container ID: 3, PDB Name: PDB1
+
+79      11   X 10-NOV-26       6629783    10-NOV-26       NO    
+        Name: /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-11_2a5733l1
+        Tag: WHOLE_LEVEL_0
+        Container ID: 3, PDB Name: PDB1
+
+82      12   X 10-NOV-26       6629792    10-NOV-26       NO    
+        Name: /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-USERS_FNO-12_2d5733l9
+        Tag: WHOLE_LEVEL_0
+        Container ID: 3, PDB Name: PDB1
+
+72      13   X 10-NOV-26       6629759    10-NOV-26       NO    
+        Name: /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-13_235733kb
+        Tag: WHOLE_LEVEL_0
+        Container ID: 4, PDB Name: PDB2
+
+69      14   X 10-NOV-26       6629750    10-NOV-26       NO    
+        Name: /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-14_205733jn
+        Tag: WHOLE_LEVEL_0
+        Container ID: 4, PDB Name: PDB2
+
+80      15   X 10-NOV-26       6629789    10-NOV-26       NO    
+        Name: /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-15_2b5733l5
+        Tag: WHOLE_LEVEL_0
+        Container ID: 4, PDB Name: PDB2
+
+76      16   X 10-NOV-26       6629766    10-NOV-26       NO    
+        Name: /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-NXTBS_FNO-16_275733ko
+        Tag: WHOLE_LEVEL_0
+        Container ID: 3, PDB Name: PDB1
+
+77      17   X 10-NOV-26       6629768    10-NOV-26       NO    
+        Name: /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SLTBS_FNO-17_285733kr
+        Tag: WHOLE_LEVEL_0
+        Container ID: 4, PDB Name: PDB2
+
+75      18   X 10-NOV-26       6629764    10-NOV-26       NO    
+        Name: /u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SLTBS_FNO-18_265733kk
+        Tag: WHOLE_LEVEL_0
+
+
+Do you really want to delete the above objects (enter YES or NO)? Y
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-1_1t5733i7 RECID=66 STAMP=1248955990
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-3_1u5733j0 RECID=67 STAMP=1248956009
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-4_245733ke RECID=73 STAMP=1248956048
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-USERS_FNO-7_2c5733l8 RECID=81 STAMP=1248956072
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-9_225733k7 RECID=71 STAMP=1248956042
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-10_1v5733jg RECID=68 STAMP=1248956019
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-11_2a5733l1 RECID=79 STAMP=1248956067
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-USERS_FNO-12_2d5733l9 RECID=82 STAMP=1248956073
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSTEM_FNO-13_235733kb RECID=72 STAMP=1248956045
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SYSAUX_FNO-14_205733jn RECID=69 STAMP=1248956027
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-UNDOTBS1_FNO-15_2b5733l5 RECID=80 STAMP=1248956070
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-NXTBS_FNO-16_275733ko RECID=76 STAMP=1248956058
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SLTBS_FNO-17_285733kr RECID=77 STAMP=1248956061
+deleted datafile copy
+datafile copy file name=/u02/oradbcdb/backups/bkp_l0_data_D-ORADBCDB_I-2274470866_TS-SLTBS_FNO-18_265733kk RECID=75 STAMP=1248956054
+Deleted 14 EXPIRED objects
+
+
+RMAN> BACKUP INCREMENTAL LEVEL 1 DATABASE PLUS ARCHIVELOG TAG 'FULL_L1_DB';
+
+
+Starting backup at 16-NOV-26
+current log archived
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting archived log backup set
+channel ORA_DISK_1: specifying archived log(s) in backup set
+input archived log thread=1 sequence=17 RECID=87 STAMP=1249507932
+input archived log thread=1 sequence=18 RECID=88 STAMP=1249507932
+input archived log thread=1 sequence=19 RECID=83 STAMP=1249507932
+input archived log thread=1 sequence=20 RECID=85 STAMP=1249507932
+input archived log thread=1 sequence=26 RECID=86 STAMP=1249507932
+input archived log thread=1 sequence=27 RECID=84 STAMP=1249507932
+input archived log thread=1 sequence=28 RECID=96 STAMP=1249508156
+input archived log thread=1 sequence=29 RECID=98 STAMP=1249508157
+channel ORA_DISK_1: starting piece 1 at 16-NOV-26
+channel ORA_DISK_1: finished piece 1 at 16-NOV-26
+piece handle=/u03/oradbcdb/fast_recovery_area/ORADBCDB/backupset/2026_11_16/o1_mf_annnn_FULL_L1_DB_ohptrp2h_.bkp tag=FULL_L1_DB comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:03
+channel ORA_DISK_1: starting archived log backup set
+channel ORA_DISK_1: specifying archived log(s) in backup set
+input archived log thread=1 sequence=1 RECID=100 STAMP=1249508645
+channel ORA_DISK_1: starting piece 1 at 16-NOV-26
+channel ORA_DISK_1: finished piece 1 at 16-NOV-26
+piece handle=/u03/oradbcdb/fast_recovery_area/ORADBCDB/backupset/2026_11_16/o1_mf_annnn_FULL_L1_DB_ohptrsqd_.bkp tag=FULL_L1_DB comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:01
+Finished backup at 16-NOV-26
+
+Starting backup at 16-NOV-26
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting incremental level 1 datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00001 name=/u02/oradata/ORADBCDB/system01.dbf
+input datafile file number=00003 name=/u02/oradata/ORADBCDB/sysaux01.dbf
+input datafile file number=00004 name=/u02/oradata/ORADBCDB/undotbs01.dbf
+input datafile file number=00018 name=/u02/oradata/ORADBCDB/datafile/o1_mf_sltbs_odo0q9dc_.dbf
+input datafile file number=00007 name=/u02/oradata/ORADBCDB/users01.dbf
+channel ORA_DISK_1: starting piece 1 at 16-NOV-26
+channel ORA_DISK_1: finished piece 1 at 16-NOV-26
+piece handle=/u03/oradbcdb/fast_recovery_area/ORADBCDB/backupset/2026_11_16/o1_mf_nnnd1_TAG20261116T214411_ohptrw0x_.bkp tag=TAG20261116T214411 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:07
+channel ORA_DISK_1: starting incremental level 1 datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00010 name=/u02/oradata/ORADBCDB/pdb1/sysaux01.dbf
+input datafile file number=00009 name=/u02/oradata/ORADBCDB/pdb1/system01.dbf
+input datafile file number=00016 name=/u02/oradata/ORADBCDB/5C3CEE1422A528D2E0636A38A8C057D3/datafile/o1_mf_nxtbs_oddz9vg7_.dbf
+input datafile file number=00011 name=/u02/oradata/ORADBCDB/pdb1/undotbs01.dbf
+input datafile file number=00012 name=/u02/oradata/ORADBCDB/pdb1/users01.dbf
+channel ORA_DISK_1: starting piece 1 at 16-NOV-26
+channel ORA_DISK_1: finished piece 1 at 16-NOV-26
+piece handle=/u03/oradbcdb/fast_recovery_area/ORADBCDB/5C3CEE1422A528D2E0636A38A8C057D3/backupset/2026_11_16/o1_mf_nnnd1_TAG20261116T214411_ohpts3nv_.bkp tag=TAG20261116T214411 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:03
+channel ORA_DISK_1: starting incremental level 1 datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00014 name=/u02/oradata/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_sysaux_ocjbj1hp_.dbf
+input datafile file number=00013 name=/u02/oradata/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_system_ocjbj1h9_.dbf
+input datafile file number=00019 name=/u02/oradata/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_sltbs_odhqgrkt_.dbf
+input datafile file number=00015 name=/u02/oradata/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/datafile/o1_mf_undotbs1_ocjbj1hq_.dbf
+channel ORA_DISK_1: starting piece 1 at 16-NOV-26
+channel ORA_DISK_1: finished piece 1 at 16-NOV-26
+piece handle=/u03/oradbcdb/fast_recovery_area/ORADBCDB/5C699EE601953D9AE0636A38A8C03AA0/backupset/2026_11_16/o1_mf_nnnd1_TAG20261116T214411_ohpts6rv_.bkp tag=TAG20261116T214411 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:03
+channel ORA_DISK_1: starting incremental level 1 datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00006 name=/u02/oradata/ORADBCDB/pdbseed/sysaux01.dbf
+skipping datafile 00006 because it has not changed
+input datafile file number=00005 name=/u02/oradata/ORADBCDB/pdbseed/system01.dbf
+skipping datafile 00005 because it has not changed
+input datafile file number=00008 name=/u02/oradata/ORADBCDB/pdbseed/undotbs01.dbf
+skipping datafile 00008 because it has not changed
+channel ORA_DISK_1: backup cancelled because all files were skipped
+Finished backup at 16-NOV-26
+
+Starting backup at 16-NOV-26
+current log archived
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting archived log backup set
+channel ORA_DISK_1: specifying archived log(s) in backup set
+input archived log thread=1 sequence=2 RECID=102 STAMP=1249508666
+channel ORA_DISK_1: starting piece 1 at 16-NOV-26
+channel ORA_DISK_1: finished piece 1 at 16-NOV-26
+piece handle=/u03/oradbcdb/fast_recovery_area/ORADBCDB/backupset/2026_11_16/o1_mf_annnn_FULL_L1_DB_ohptsbwm_.bkp tag=FULL_L1_DB comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:01
+Finished backup at 16-NOV-26
+
+Starting Control File and SPFILE Autobackup at 16-NOV-26
+piece handle=/u02/oradbcdb/backups/ctl_bk_c-2274470866-20261116-04 comment=NONE
+Finished Control File and SPFILE Autobackup at 16-NOV-26
+
+RMAN> exit
+
+
+Recovery Manager complete.
+[oracle@pvm1 ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Mon Nov 16 21:45:54 2026
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> SHOW PDBS
+
+    CON_ID CON_NAME			  OPEN MODE  RESTRICTED
+---------- ------------------------------ ---------- ----------
+	 2 PDB$SEED			  READ ONLY  NO
+	 3 PDB1 			  READ WRITE NO
+	 4 PDB2 			  READ WRITE NO
+SQL> ALTER SESSION SET CONTAINER=PDB2;
+
+Session altered.
+
+SQL> SELECT COUNT(*) FROM pdb2_intern.ENGINEERINGSTUDENTS;
+
+  COUNT(*)
+----------
+	 5
+
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@pvm1 ~]$ adrci
+
+ADRCI: Release 19.0.0.0.0 - Production on Mon Nov 16 21:55:50 2026
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+ADR base = "/u01/app/oracle"
+adrci> set homepath diag/rdbms/oradbcdb/oradbcdb
+adrci> show control
+
+ADR Home = /u01/app/oracle/diag/rdbms/oradbcdb/oradbcdb:
+*************************************************************************
+ADRID                SHORTP_POLICY        LONGP_POLICY         LAST_MOD_TIME                            LAST_AUTOPRG_TIME                        LAST_MANUPRG_TIME                        ADRDIR_VERSION       ADRSCHM_VERSION      ADRSCHMV_SUMMARY     ADRALERT_VERSION     CREATE_TIME                              SIZEP_POLICY         PURGE_PERIOD         FLAGS                PURGE_THRESHOLD      
+-------------------- -------------------- -------------------- ---------------------------------------- ---------------------------------------- ---------------------------------------- -------------------- -------------------- -------------------- -------------------- ---------------------------------------- -------------------- -------------------- -------------------- -------------------- 
+2247388652           720                  8760                 2026-09-24 15:22:30.713807 +01:00                                                 2026-10-26 21:46:08.832486 +01:00        1                    2                    110                  1                    2026-09-24 15:22:30.713807 +01:00        18446744073709551615 0                    0                    95                  
+1 row fetched
+
+adrci> purge -age 1440
+adrci> exit
+[oracle@pvm1 ~]$ exit
+logout
+[root@pvm1 ~]# exit
+exit
+
+Script done on Mon 16 Nov 2026 09:58:05 PM WAT
